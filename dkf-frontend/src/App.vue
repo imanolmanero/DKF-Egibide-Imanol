@@ -4,7 +4,7 @@
   <header>
 
   </header>
-  <main>
+  <main class="container-fluid">
     <RouterView />
   </main>
 </template>
