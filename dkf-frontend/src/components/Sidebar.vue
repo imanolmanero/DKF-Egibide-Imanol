@@ -12,24 +12,24 @@ const authStore = useAuthStore();
 
 const optionsByRole: Record<string, SidebarOption[]> = {
   Alumno: [
-    { label: "📁 Subir cuaderno" },
-    { label: "ℹ️ Ver información" },
-    { label: "📝 Consultar notas" },
+    { label: "- Subir cuaderno" },
+    { label: "- Ver información" },
+    { label: "- Consultar notas" },
   ],
   TutorEmpresa: [
-    { label: "✅ Elegir competencias" },
-    { label: "📝 Evaluarlas" },
-    { label: "ℹ️ Ver información personas" },
+    { label: "- Elegir competencias" },
+    { label: "- Evaluarlas" },
+    { label: "- Ver información personas" },
   ],
   TutorCentro: [
-    { label: "🗓️ Asignar horario/calendario" },
-    { label: "🏢 Asignar empresa" },
-    { label: "ℹ️ Ver información" },
-    { label: "📊 Seguimiento" },
+    { label: "- Asignar horario/calendario" },
+    { label: "- Asignar empresa" },
+    { label: "- Ver información" },
+    { label: "- Seguimiento" },
   ],
   Admin: [
-    { label: "➕ Añadir ciclos/personas/empresas/competencias" },
-    { label: "🌐 Ver todo" },
+    { label: "- Añadir ciclos/personas/empresas/competencias" },
+    { label: "- Ver todo" },
   ],
 };
 
