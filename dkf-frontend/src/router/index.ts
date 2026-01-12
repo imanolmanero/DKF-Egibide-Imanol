@@ -141,6 +141,13 @@ const router = createRouter({
           },
         },
         {
+          path: "admin/ciclos",
+          name: "admin-ciclos",
+          components: {
+            main: () => import("@/pages/Admin/ciclos.vue"),
+          },
+        },
+        {
           path: "admin/competencias",
           name: "admin-competencias",
           components: {
@@ -177,14 +184,14 @@ const router = createRouter({
         },
         {
           path: "admin/añadir-empresas",
-          name: "admin-empresas",
+          name: "admin-añadir_empresas",
           components: {
             main: () => import("@/pages/Admin/añadir_empresas.vue"),
           },
         },
         {
           path: "admin/añadir-alumnos",
-          name: "admin-alumnos",
+          name: "admin-añadir_alumnos",
           components: {
             main: () => import("@/pages/Admin/añadir_alumnos.vue"),
           },
