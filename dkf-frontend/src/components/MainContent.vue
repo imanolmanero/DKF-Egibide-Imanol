@@ -24,7 +24,7 @@ const mainContentCards = computed(() => {
 </script>
 
 <template>
-  <main class="flex-grow-1 p-4 bg-light overflow-auto rounded shadow-sm bg-light">
+  <main class="flex-grow-1 p-4 overflow-auto island">
     <RouterView name="main"></RouterView>
   </main>
 </template>

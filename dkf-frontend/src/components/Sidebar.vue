@@ -17,7 +17,7 @@ export default {
 </script>
 
 <template>
-  <aside class="sidebar bg-light rounded shadow-sm">
+  <aside class="sidebar island">
     <!-- Menú para Alumnos -->
     <nav v-if="userRole === 'alumno'" class="sidebar-nav">
       <div class="sidebar-section">
