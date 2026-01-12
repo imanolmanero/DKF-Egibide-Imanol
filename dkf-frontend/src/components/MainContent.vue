@@ -24,9 +24,7 @@ const mainContentCards = computed(() => {
 </script>
 
 <template>
-  <main
-    class="flex-grow-1 p-4 bg-light overflow-auto rounded shadow-sm bg-light"
-  >
+  <main class="flex-grow-1 p-4 overflow-auto island">
     <h1 class="mb-4">Panel principal</h1>
 
     <div class="row g-3">

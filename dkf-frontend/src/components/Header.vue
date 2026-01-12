@@ -9,7 +9,7 @@ function logout() {
 </script>
 
 <template>
-  <nav class="navbar navbar-expand-lg rounded shadow-sm bg-light">
+  <nav class="navbar navbar-expand-lg island">
     <div class="container-fluid">
       <img src="../assets/images/logotipo.png" alt="logotipo" height="50" />
       <div class="dropdown">
