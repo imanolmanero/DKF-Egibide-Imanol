@@ -36,6 +36,7 @@ class DatabaseSeeder extends Seeder
 
             EstanciaSeeder::class,
             CuadernoSeeder::class,
+            SeguimientosSeeder::class,
         ]);
     }
 }

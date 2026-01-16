@@ -86,40 +86,6 @@ export default {
           </li>
         </ul>
       </div>
-
-      <div class="sidebar-section">
-        <h3 class="sidebar-title">Asignaciones</h3>
-        <ul class="list-unstyled mb-0">
-          <li>
-            <RouterLink to="/tutor-egibide/alumno-empresa" class="sidebar-item"
-              >Alumno x Empresa</RouterLink
-            >
-          </li>
-          <li>
-            <RouterLink
-              to="/tutor-egibide/horario-calendario"
-              class="sidebar-item"
-              >Horario + Calendario</RouterLink
-            >
-          </li>
-        </ul>
-      </div>
-
-      <div class="sidebar-section">
-        <h3 class="sidebar-title">Seguimiento</h3>
-        <ul class="list-unstyled mb-0">
-          <li>
-            <RouterLink to="/tutor-egibide/general" class="sidebar-item"
-              >General</RouterLink
-            >
-          </li>
-          <li>
-            <RouterLink to="/tutor-egibide/cuaderno" class="sidebar-item"
-              >Cuaderno</RouterLink
-            >
-          </li>
-        </ul>
-      </div>
     </nav>
 
     <!-- Menú para Empresas -->
