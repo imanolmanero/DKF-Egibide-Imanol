@@ -14,13 +14,6 @@ return new class extends Migration {
 
             $table->string('nombre');
             $table->string('codigo_familia', 30)->unique();
-
-            $table->foreignId('centro_id')
-                ->constrained('centros')
-                ->restrictOnDelete()
-                ->cascadeOnUpdate();
-
-            $table->timestamps();
         });
     }
 

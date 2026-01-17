@@ -18,8 +18,8 @@ class FamiliaProfesional extends Model {
     /**
      * Get the centro that owns this familia profesional
      */
-    public function centro(): BelongsTo {
-        return $this->belongsTo(Centro::class);
+    public function centro(): BelongsToMany {
+        return $this->belongsToMany(Centro::class,'centros_familias','centro_id','familia_id');
     }
 
     /**

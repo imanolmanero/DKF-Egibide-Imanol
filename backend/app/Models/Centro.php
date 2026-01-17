@@ -14,7 +14,7 @@ class Centro extends Model {
   /**
    * Get all familia profesional for the centro
    */
-  public function familiasProfesionales(): HasMany {
-    return $this->hasMany(FamiliaProfesional::class);
+  public function familiasProfesionales(): BelongsToMany {
+    return $this->belongsToMany(FamiliaProfesional::class,'centros_familias','centro_id','familia_id');
   }
 }
