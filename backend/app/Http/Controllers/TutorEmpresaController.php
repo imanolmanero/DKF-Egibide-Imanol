@@ -66,4 +66,19 @@ class TutorEmpresaController extends Controller {
     public function destroy(TutorEmpresa $tutorEmpresa) {
         //
     }
+
+    public function me(Request $request)
+    {
+        $user = $request->user();
+
+        $tutor = TutorEmpresa::where('user_id', $user->id)->first();
+
+        return response()->json([
+            'id' => $tutor->id,
+            'nombre' => $tutor->nombre,
+            'apellidos' => $tutor->apellidos,
+            'email' => $user->email,
+            'tipo' => $user->tipo,
+        ]);
+    }
 }

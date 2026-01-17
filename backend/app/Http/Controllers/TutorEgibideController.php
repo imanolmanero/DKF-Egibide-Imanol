@@ -57,4 +57,19 @@ class TutorEgibideController extends Controller {
     public function destroy(TutorEgibide $tutorEgibide) {
         //
     }
+
+    public function me(Request $request)
+    {
+        $user = $request->user();
+
+        $tutor = TutorEgibide::where('user_id', $user->id)->first();
+
+        return response()->json([
+            'id' => $tutor->id,
+            'nombre' => $tutor->nombre,
+            'apellidos' => $tutor->apellidos,
+            'email' => $user->email,
+            'tipo' => $user->tipo,
+        ]);
+    }
 }
