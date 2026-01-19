@@ -71,6 +71,38 @@ const irACalificacion = () => {
   });
 };
 
+const irAsignarEmpresa = () => {
+  router.push({
+    name: "tutor_egibide-alumno_empresa",
+    params: { alumnoId: alumnoId },
+    query: { tipoTutor: tipoTutor, tutorId: tutorId },
+  });
+};
+
+const irAsignarHorario = () => {
+  router.push({
+    name: "tutor_egibide-horario_calendario",
+    params: { alumnoId: alumnoId },
+    query: { tipoTutor: tipoTutor, tutorId: tutorId },
+  });
+};
+
+const irSeguimiento = () => {
+  router.push({
+    name: "tutor_egibide-seguimiento",
+    params: { alumnoId: alumnoId },
+    query: { tipoTutor: tipoTutor, tutorId: tutorId },
+  });
+};
+
+const irCompetencias = () => {
+  router.push({
+    name: "tutor_egibide-competencias",
+    params: { alumnoId: alumnoId },
+    query: { tipoTutor: tipoTutor, tutorId: tutorId },
+  });
+};
+
 const volver = () => {
   router.back();
 };
@@ -218,7 +250,7 @@ const formatDate = (dateString: string) => {
           </div>
         </div>
 
-        <div class="col-md-6" v-if="tipoTutor === 'empresa'">
+        <div class="col-md" v-if="tipoTutor === 'empresa'">
           <div
             class="card h-100 action-card"
             @click="irACalificacion"
@@ -241,6 +273,78 @@ const formatDate = (dateString: string) => {
         </div>
 
         <!-- Tutor egibide -->
+        <div class="col-md" v-if="tipoTutor === 'egibide'">
+          <div
+            class="card h-100 action-card"
+            @click="irAsignarEmpresa"
+            role="button"
+            tabindex="0"
+          >
+            <div class="card-body text-center p-4">
+              <div class="icon-wrapper mb-3">
+                <i class="bi bi-building-add display-4 text-success"></i>
+              </div>
+              <h5 class="card-title">Asignar empresa</h5>
+              <div class="mt-3">
+                <i class="bi bi-arrow-right-circle"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md" v-if="tipoTutor === 'egibide'">
+          <div
+            class="card h-100 action-card"
+            @click="irAsignarHorario"
+            role="button"
+            tabindex="0"
+          >
+            <div class="card-body text-center p-4">
+              <div class="icon-wrapper mb-3">
+                <i class="bi bi-calendar-plus display-4 text-success"></i>
+              </div>
+              <h5 class="card-title">Asignar horario y calendario</h5>
+              <div class="mt-3">
+                <i class="bi bi-arrow-right-circle"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md" v-if="tipoTutor === 'egibide'">
+          <div
+            class="card h-100 action-card"
+            @click="irSeguimiento"
+            role="button"
+            tabindex="0"
+          >
+            <div class="card-body text-center p-4">
+              <div class="icon-wrapper mb-3">
+                <i class="bi bi-chat-left-text display-4 text-primary"></i>
+              </div>
+              <h5 class="card-title">Seguimiento</h5>
+              <div class="mt-3">
+                <i class="bi bi-arrow-right-circle"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md" v-if="tipoTutor === 'egibide'">
+          <div
+            class="card h-100 action-card"
+            @click="irCompetencias"
+            role="button"
+            tabindex="0"
+          >
+            <div class="card-body text-center p-4">
+              <div class="icon-wrapper mb-3">
+                <i class="bi bi-eye display-4 text-primary"></i>
+              </div>
+              <h5 class="card-title">Visualizar competencias</h5>
+              <div class="mt-3">
+                <i class="bi bi-arrow-right-circle"></i>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
