@@ -7,6 +7,7 @@ import router from "@/router";
 
 const props = defineProps<{
   alumnoId: number;
+  tutorEgibide: boolean;
 }>();
 
 const competenciaStore = useCompetenciasStore();
@@ -122,11 +123,9 @@ async function guardarCalificacionesTransversales() {
           :id="`competencia-${competencia.id}`"
           v-model.number="competenciasCalificadas[competencia.id]"
           required
+          :disabled="props.tutorEgibide"
         >
-          <option
-            v-if="!tieneCalificacion(competencia.id)"
-            :value="null"
-          >
+          <option v-if="!tieneCalificacion(competencia.id)" :value="null">
             Sin calificar
           </option>
           <option :value="1">1</option>
@@ -136,7 +135,11 @@ async function guardarCalificacionesTransversales() {
         </select>
       </li>
     </ul>
-    <button class="btn btn-primary" @click="guardarCalificacionesTransversales">
+    <button
+      class="btn btn-primary"
+      v-if="!props.tutorEgibide"
+      @click="guardarCalificacionesTransversales"
+    >
       Guardar Calificaciónes Transversales
     </button>
   </div>

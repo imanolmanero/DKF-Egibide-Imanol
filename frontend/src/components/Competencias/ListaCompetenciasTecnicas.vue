@@ -8,6 +8,7 @@ import router from "@/router";
 const props = defineProps<{
   alumnoId: number;
   asignar: boolean;
+  tutorEgibide: boolean;
 }>();
 
 const competenciaStore = useCompetenciasStore();
@@ -143,10 +144,7 @@ async function guardarCalificacionesTecnicas() {
           :class="{ 'text-muted': tieneCalificacion(competencia.id) }"
         >
           {{ competencia.descripcion }}
-          <small
-            v-if="tieneCalificacion(competencia.id)"
-            class="text-muted"
-          >
+          <small v-if="tieneCalificacion(competencia.id)" class="text-muted">
             (ya tiene calificación)
           </small>
         </label>
@@ -169,11 +167,9 @@ async function guardarCalificacionesTecnicas() {
           :id="`competencia-${competencia.id}`"
           v-model.number="competenciasCalificadas[competencia.id]"
           required
+          :disabled="props.tutorEgibide"
         >
-          <option
-            v-if="!tieneCalificacion(competencia.id)"
-            :value="null"
-          >
+          <option v-if="!tieneCalificacion(competencia.id)" :value="null">
             Sin calificar
           </option>
           <option :value="1">1</option>
@@ -183,12 +179,16 @@ async function guardarCalificacionesTecnicas() {
         </select>
       </li>
     </ul>
-    <button class="btn btn-primary" v-if="props.asignar" @click="guardar">
+    <button
+      class="btn btn-primary"
+      v-if="props.asignar && !props.tutorEgibide"
+      @click="guardar"
+    >
       Guardar
     </button>
     <button
       class="btn btn-primary"
-      v-if="!props.asignar"
+      v-if="!props.asignar && !props.tutorEgibide"
       @click="guardarCalificacionesTecnicas"
     >
       Guardar Calificación Técnicas

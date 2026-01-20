@@ -33,12 +33,17 @@ onMounted(async () => {
   try {
     isLoading.value = true;
 
-    if (!store.value.alumnosAsignados || store.value.alumnosAsignados.length === 0) {
+    if (
+      !store.value.alumnosAsignados ||
+      store.value.alumnosAsignados.length === 0
+    ) {
       await store.value.fetchAlumnosAsignados(tutorId);
     }
 
     alumno.value =
-      store.value.alumnosAsignados.find((a: Alumno) => Number(a.id) === alumnoId) || null;
+      store.value.alumnosAsignados.find(
+        (a: Alumno) => Number(a.id) === alumnoId,
+      ) || null;
 
     if (!alumno.value) {
       error.value = "Alumno no encontrado";
@@ -50,12 +55,16 @@ onMounted(async () => {
     }
 
     empresa.value =
-      empresaStore.empresas.find((e: Empresa) => Number(e.id) === alumno.value?.pivot?.empresa_id) || null;
+      empresaStore.empresas.find(
+        (e: Empresa) => Number(e.id) === alumno.value?.pivot?.empresa_id,
+      ) || null;
 
     if (!empresa.value) {
-      console.warn("No se encontró la empresa con ID:", alumno.value?.pivot?.empresa_id);
+      console.warn(
+        "No se encontró la empresa con ID:",
+        alumno.value?.pivot?.empresa_id,
+      );
     }
-
   } catch (err) {
     console.error("Error al cargar alumno o empresas:", err);
     error.value = "Error al cargar los datos del alumno";
@@ -97,7 +106,6 @@ const irSeguimiento = () => {
   router.push({
     name: "tutor_egibide-seguimiento",
     params: { alumnoId: alumnoId },
-    query: { tipoTutor: tipoTutor, tutorId: tutorId },
   });
 };
 
@@ -105,7 +113,6 @@ const irCompetencias = () => {
   router.push({
     name: "tutor_egibide-competencias",
     params: { alumnoId: alumnoId },
-    query: { tipoTutor: tipoTutor, tutorId: tutorId },
   });
 };
 
