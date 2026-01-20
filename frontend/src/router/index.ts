@@ -109,7 +109,7 @@ const router = createRouter({
           meta: { role: "tutor_egibide" },
         },
         {
-          path: "tutor-egibide/horario-calendario",
+          path: "tutor-egibide/horario-calendario/:alumnoId/asignar-horario-calendario",
           name: "tutor_egibide-horario_calendario",
           components: {
             main: () => import("@/pages/TutorEgibide/horario_calendario.vue"),
@@ -141,7 +141,7 @@ const router = createRouter({
           meta: { role: "tutor_egibide" },
         },
         {
-          path: "tutor-egibide/alumno-empresa/:alumnoId/competencias",
+          path: "tutor-egibide/competencias",
           name: "tutor_egibide-competencias",
           components: {
             main: () => import("@/pages/TutorEgibide/competencias.vue"),
