@@ -16,9 +16,8 @@ const props = defineProps<{
 
 const competenciaStore = useCompetenciasStore();
 
-// En tu script setup
-const competencias = ref<Competencia[]>([]); // Para modo asignar
-const competenciasAsignadas = ref<CompetenciaAsignada[]>([]); // Para modo calificar
+const competencias = ref<Competencia[]>([]);
+const competenciasAsignadas = ref<CompetenciaAsignada[]>([]);
 const competenciasSeleccionadas = ref<number[]>([]);
 const competenciasCalificadas = ref<Record<number, number>>({});
 
@@ -31,18 +30,14 @@ const tieneCalificacion = (competenciaId: number): boolean => {
 onMounted(async () => {
   try {
     if (!props.asignar) {
-      // Modo calificar - cargar asignadas
       await competenciaStore.fetchCompetenciasTecnicasAsignadasByAlumno(
         props.alumnoId,
       );
       competenciasAsignadas.value =
         competenciaStore.competenciasAsignadas as CompetenciaAsignada[];
-      console.log("📋 Competencias asignadas:", competenciasAsignadas.value);
     } else {
-      // Modo asignar - cargar todas
       await competenciaStore.fetchCompetenciasTecnicasByAlumno(props.alumnoId);
       competencias.value = competenciaStore.competencias;
-      console.log("📋 Todas las competencias:", competencias.value);
     }
 
     // Cargar calificaciones
@@ -67,12 +62,6 @@ onMounted(async () => {
         }
       });
     }
-
-    console.log(
-      "🔵 competenciasSeleccionadas:",
-      competenciasSeleccionadas.value,
-    );
-    console.log("🟢 competenciasCalificadas:", competenciasCalificadas.value);
   } catch (error) {
     console.error("Error al cargar datos:", error);
   } finally {
@@ -102,22 +91,16 @@ async function guardar() {
 async function guardarCalificacionesTecnicas() {
   let ok = false;
 
-  // ✅ Solo enviar las competencias que tienen calificación válida (1-4)
+  // Solo enviar las competencias que tienen calificación
   const payload = Object.entries(competenciasCalificadas.value)
     .filter(([_, calificacion]) => {
       const nota = Number(calificacion);
-      return nota >= 1 && nota <= 4; // Solo calificaciones válidas
+      return nota >= 1 && nota <= 4;
     })
     .map(([competenciaId, calificacion]) => ({
       competencia_id: Number(competenciaId),
       calificacion: Number(calificacion),
     }));
-
-  console.log("📤 Payload final:", payload);
-  console.log(
-    "🔍 competenciasCalificadas antes de enviar:",
-    competenciasCalificadas.value,
-  );
 
   ok = await competenciaStore.calificarCompetenciasTecnicas(
     props.alumnoId,

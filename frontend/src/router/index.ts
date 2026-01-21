@@ -150,7 +150,7 @@ const router = createRouter({
         },
         {
           path: "tutor-egibide/alumno-empresa/:alumnoId/calificaciones",
-          name: "tutor_egibide-cegalificaciones",
+          name: "tutor_egibide-calificaciones",
           components: {
             main: () => import("@/pages/TutorEgibide/calificaciones.vue"),
           },
