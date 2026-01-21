@@ -6,6 +6,10 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import { useAuthStore } from "./auth";
 import type { CompetenciaCalificada } from "@/interfaces/CompetenciaCalificada";
+import type {
+  CalculoNotasTecnicasResponse,
+  NotaCompetenciaTransversal,
+} from "@/interfaces/Notas";
 
 export const useCompetenciasStore = defineStore("competencias", () => {
   const competencias = ref<Competencia[]>([]);
@@ -303,6 +307,56 @@ export const useCompetenciasStore = defineStore("competencias", () => {
     return data as Record<number, number>;
   }
 
+  async function calcularNotasTecnicasByAlumno(
+    alumno_id: number,
+  ): Promise<CalculoNotasTecnicasResponse> {
+    const response = await fetch(
+      `http://localhost:8000/api/notas/alumno/${alumno_id}/tecnicas`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: authStore.token ? `Bearer ${authStore.token}` : "",
+          Accept: "application/json",
+        },
+      },
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      setMessage(
+        data.message || "Error desconocido, inténtalo más tarde",
+        "error",
+      );
+    }
+
+    return data as CalculoNotasTecnicasResponse;
+  }
+
+  async function getNotaTransversalByAlumno(alumno_id: number) {
+    const response = await fetch(
+      `http://localhost:8000/api/notas/alumno/${alumno_id}/transversal`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: authStore.token ? `Bearer ${authStore.token}` : "",
+          Accept: "application/json",
+        },
+      },
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      setMessage(
+        data.message || "Error desconocido, inténtalo más tarde",
+        "error",
+      );
+    }
+
+    return data as NotaCompetenciaTransversal;
+  }
+
   return {
     competencias,
     competenciasAsignadas,
@@ -319,5 +373,7 @@ export const useCompetenciasStore = defineStore("competencias", () => {
     calificarCompetenciasTransversales,
     getCalificacionesCompetenciasTecnicas,
     getCalificacionesCompetenciasTransversales,
+    calcularNotasTecnicasByAlumno,
+    getNotaTransversalByAlumno,
   };
 });

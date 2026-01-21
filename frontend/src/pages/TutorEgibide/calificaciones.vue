@@ -1,5 +1,12 @@
 <script setup lang="ts">
 import type { Alumno } from "@/interfaces/Alumno";
+import type { Asignatura } from "@/interfaces/Asignatura";
+import type {
+  NotaCompetenciaTecnica,
+  NotaCompetenciaTransversal,
+} from "@/interfaces/Notas";
+import { useAlumnosStore } from "@/stores/alumnos";
+import { useCompetenciasStore } from "@/stores/competencias";
 import { useTutorEgibideStore } from "@/stores/tutorEgibide";
 import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -8,8 +15,14 @@ const route = useRoute();
 const router = useRouter();
 
 const tutorEgibideStore = useTutorEgibideStore();
+const alumnoStore = useAlumnosStore();
+const competenciasStore = useCompetenciasStore();
 
 const alumno = ref<Alumno | null>(null);
+const asignaturas = ref<Asignatura[]>([]);
+const notasTecnicas = ref<NotaCompetenciaTecnica[]>([]);
+const notaTransversal = ref<number>(0);
+
 const isLoading = ref(true);
 const error = ref<string | null>(null);
 
@@ -28,11 +41,35 @@ onMounted(async () => {
       error.value = "Alumno no encontrado";
       console.error("No se encontró el alumno con ID:", alumnoId);
     }
+
+    // Obtener asignaturas
+    await alumnoStore.getAsignaturasAlumno(alumnoId);
+    asignaturas.value = alumnoStore.asignaturas;
+
+    // Obtener y calcular nota tecnica
+    const response =
+      await competenciasStore.calcularNotasTecnicasByAlumno(alumnoId);
+    notasTecnicas.value = response.notas_competenciasTec;
+
+    // Obtener nota transversal
+    const responseTrans =
+      await competenciasStore.getNotaTransversalByAlumno(alumnoId);
+    notaTransversal.value = responseTrans.nota_media;
   } catch (error) {
     console.error("Error al cargar alumnos:", error);
   } finally {
     isLoading.value = false;
   }
+});
+
+const notasTecnicasPorAsignatura = computed(() => {
+  const map: Record<number, number> = {};
+
+  notasTecnicas.value.forEach((n) => {
+    map[n.asignatura_id] = n.nota_media;
+  });
+
+  return map;
 });
 
 const volver = () => {
@@ -52,7 +89,7 @@ const volverAlumnos = () => {
       <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Cargando...</span>
       </div>
-      <p class="mt-3 text-muted">Cargando competencias del alumno...</p>
+      <p class="mt-3 text-muted">Cargando calificaciones del alumno...</p>
     </div>
 
     <!-- Error -->
@@ -72,7 +109,7 @@ const volverAlumnos = () => {
 
     <!-- Sin alumno -->
     <div v-else-if="!alumno" class="alert alert-warning">
-      No se encontró conpetencias del alumno
+      No se ha encontrado el alumno
       <button class="btn btn-sm btn-outline-warning ms-3" @click="volver">
         Volver
       </button>
@@ -109,7 +146,50 @@ const volverAlumnos = () => {
         <div class="card-header">
           <h3 class="mb-1">Calificaciones</h3>
         </div>
-        <div class="card-body"></div>
+        <div class="card-body">
+          <table
+            v-if="asignaturas.length"
+            class="table table-striped-columns text-center align-middle"
+          >
+            <thead>
+              <tr>
+                <th rowspan="2" class="align-middle"></th>
+                <th rowspan="2" class="bg-primary text-light align-middle">
+                  Egibide (80%)
+                </th>
+                <th colspan="3" class="bg-light">Empresa (20%)</th>
+              </tr>
+              <tr>
+                <th>Técnico (60%)</th>
+                <th>Transversal (20%)</th>
+                <th>Cuaderno (20%)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="(asignatura, index) in asignaturas"
+                :key="asignatura.id"
+              >
+                <td>{{ asignatura.codigo_asignatura }}</td>
+                <td></td>
+                <td>{{ notasTecnicasPorAsignatura[asignatura.id] ?? "-" }}</td>
+
+                <td v-if="index === 0" :rowspan="asignaturas.length">
+                  {{ notaTransversal }}
+                </td>
+
+                <td v-if="index === 0" :rowspan="asignaturas.length"></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div v-else class="alert alert-warning">
+            Este alumno no tiene calificaciones
+            <button class="btn btn-sm btn-outline-warning ms-3" @click="volver">
+              Volver
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>

@@ -30,7 +30,7 @@ class Ciclos extends Model {
      * Get all asignaturas for this ciclo
      */
     public function asignaturas(): HasMany {
-        return $this->hasMany(Asignatura::class);
+        return $this->hasMany(Asignatura::class, 'ciclo_id');
     }
 
     /**

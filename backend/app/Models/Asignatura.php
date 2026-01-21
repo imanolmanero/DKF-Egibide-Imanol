@@ -19,7 +19,7 @@ class Asignatura extends Model {
    * Get the ciclo that owns this asignatura
    */
   public function ciclo(): BelongsTo {
-    return $this->belongsTo(Ciclos::class);
+    return $this->belongsTo(Ciclos::class, 'ciclo_id');
   }
 
   /**
