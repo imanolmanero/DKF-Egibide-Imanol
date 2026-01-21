@@ -2,6 +2,7 @@ import type { Empresa } from "@/interfaces/Empresa";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { useAuthStore } from "./auth";
+import { useTutorEgibideStore } from "./tutorEgibide";
 
 export const useEmpresasStore = defineStore("empresas", () => {
   const empresas = ref<Empresa[]>([]);
@@ -92,10 +93,7 @@ export const useEmpresasStore = defineStore("empresas", () => {
     return true;
   }
 
-  async function asignarEmpresa(
-    alumno_id: number,
-    empresa_id: number[],
-  ) {
+  async function asignarEmpresa(alumno_id: number, empresa_id: number) {
     const response = await fetch(
       "http://localhost:8000/api/empresas/asignar",
       {
@@ -123,6 +121,12 @@ export const useEmpresasStore = defineStore("empresas", () => {
       data.message || "Empresa asignada correctamente",
       "success",
     );
+
+    // ⚡ Aquí: instancia del store de tutorEgibide
+    const tutorEgibideStore = useTutorEgibideStore();
+    // Actualizar el alumno localmente para que se vea en la UI sin recargar
+    tutorEgibideStore.updateAlumnoEmpresa(alumno_id, empresa_id);
+
     return true;
   }
 

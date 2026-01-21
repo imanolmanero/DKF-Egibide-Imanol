@@ -122,6 +122,18 @@ export const useTutorEgibideStore = defineStore("tutorEgibide", () => {
     }
   }
 
+  async function updateAlumnoEmpresa(alumnoId: number, empresaId: number) {
+    const alumnoToUpdate = alumnosAsignados.value.find(a => a.id === alumnoId);
+    if (!alumnoToUpdate) return;
+
+    // Aseguramos que pivot existe
+    if (!alumnoToUpdate.pivot) {
+      alumnoToUpdate.pivot = { alumno_id: alumnoId, empresa_id: empresaId } as any;
+    } else {
+      alumnoToUpdate.pivot.empresa_id = empresaId;
+    }
+  }
+
   return {
     alumnosAsignados,
     loading,
@@ -131,5 +143,6 @@ export const useTutorEgibideStore = defineStore("tutorEgibide", () => {
     fetchAlumnosAsignados,
     guardarHorarioAlumno,
     setMessage,
+    updateAlumnoEmpresa
   };
 });

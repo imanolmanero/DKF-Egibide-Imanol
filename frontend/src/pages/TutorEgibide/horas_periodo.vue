@@ -44,7 +44,12 @@ const guardarHorario = async () => {
     horasTotales.value!
   );
 
-  if (ok) volver();
+  if (ok) {
+    // Mostrar toast primero
+    setTimeout(() => {
+      volver();
+    }, 1000);
+  }
 };
 </script>
 

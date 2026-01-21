@@ -14,8 +14,17 @@ const tutorEgibideStore = useTutorEgibideStore();
 const tutorEmpresaStore = useTutorEmpresaStore();
 const empresaStore = useEmpresasStore();
 
-const alumno = ref<Alumno | null>(null);
-const empresa = ref<Empresa | null>(null);
+// Computed alumno
+const alumno = computed(() => {
+  return store.value.alumnosAsignados.find(a => a.id === alumnoId) || null;
+});
+
+// Computed empresa: busca la empresa en el store de empresas
+const empresa = computed(() => {
+  if (!alumno.value?.pivot?.empresa_id) return null;
+  return empresaStore.empresas.find(e => e.id === alumno.value!.pivot!.empresa_id) || null;
+});
+
 const isLoading = ref(true);
 const error = ref<string | null>(null);
 
@@ -40,33 +49,15 @@ onMounted(async () => {
       await store.value.fetchAlumnosAsignados(tutorId);
     }
 
-    alumno.value =
-      store.value.alumnosAsignados.find(
-        (a: Alumno) => Number(a.id) === alumnoId,
-      ) || null;
+    if (!empresaStore.empresas || empresaStore.empresas.length === 0) {
+      await empresaStore.fetchEmpresas();
+    }
 
     if (!alumno.value) {
       error.value = "Alumno no encontrado";
-      return;
-    }
-
-    if (!empresaStore.empresas || empresaStore.empresas.length === 0) {
-      await empresaStore.fetchEmpresas(); // Cambiar a fetch por ciclos
-    }
-
-    empresa.value =
-      empresaStore.empresas.find(
-        (e: Empresa) => Number(e.id) === alumno.value?.pivot?.empresa_id,
-      ) || null;
-
-    if (!empresa.value) {
-      console.warn(
-        "No se encontró la empresa con ID:",
-        alumno.value?.pivot?.empresa_id,
-      );
     }
   } catch (err) {
-    console.error("Error al cargar alumno o empresas:", err);
+    console.error(err);
     error.value = "Error al cargar los datos del alumno";
   } finally {
     isLoading.value = false;
@@ -236,16 +227,13 @@ const formatDate = (dateString: string) => {
                 <strong class="ms-2">{{ alumno.pivot.horas_totales }}h</strong>
               </div>
             </div>
-            <div
-              class="col-md-6"
-              v-if="alumno.pivot?.fecha_inicio && alumno.pivot?.fecha_fin"
-            >
+            <div class="col-md-6" v-if="alumno.pivot?.fecha_inicio || alumno.pivot?.fecha_fin">
               <div class="info-item">
                 <i class="bi bi-calendar-range-fill text-primary me-2"></i>
                 <span class="text-muted">Periodo:</span>
                 <strong class="ms-2">
-                  {{ formatDate(alumno.pivot.fecha_inicio) }} -
-                  {{ formatDate(alumno.pivot.fecha_fin) }}
+                  {{ alumno.pivot?.fecha_inicio ? formatDate(alumno.pivot.fecha_inicio) : 'Por definir' }} -
+                  {{ alumno.pivot?.fecha_fin ? formatDate(alumno.pivot.fecha_fin) : 'Por definir' }}
                 </strong>
               </div>
             </div>
