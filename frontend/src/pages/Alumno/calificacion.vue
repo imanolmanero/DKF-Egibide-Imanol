@@ -15,7 +15,7 @@ onMounted(async () => {
 
     <div v-if="alumnosStore.notaCuaderno !== null" class="nota card">
       <div class="card-body">
-        <p class="fs-5"><strong>Nota:</strong> {{ alumnosStore.notaCuaderno }}</p>
+        <p><strong>Nota:</strong> {{ alumnosStore.notaCuaderno }}</p>
       </div>
     </div>
 

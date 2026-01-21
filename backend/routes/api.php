@@ -12,8 +12,10 @@ use App\Http\Controllers\NotasController;
 use App\Http\Controllers\TutorEgibideController;
 use App\Http\Controllers\TutorEmpresaController;
 use App\Http\Controllers\SeguimientosController;
+use App\Http\Controllers\EntregaController;
 
 Route::post('/login', [AuthController::class, 'authenticate'])->name('authenticate');
+Route::get('/entregas/{entrega}/archivo', [EntregaController::class, 'archivo']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
@@ -52,15 +54,22 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/empresas/asignar', [EmpresasController::class, 'storeEmpresaAsignada']);
 
     // Alumnos
+    Route::get('/me/inicio', [AlumnosController::class, 'inicio']);
     Route::get('/alumnos', [AlumnosController::class, 'index']);
     Route::post('/alumnos', [AlumnosController::class, 'store']);
     Route::get('/me/alumno', [AlumnosController::class, 'me']);
     Route::get('/me/nota-cuaderno', [AlumnosController::class, 'notaCuadernoLogeado']);
     Route::get('/alumnos/{alumno_id}/asignaturas', [AlumnosController::class, 'getAsignaturasAlumno']);
+    Route::get('/alumnos/{alumno}/entregas', [AlumnosController::class, 'entregas']);
+
+    //Entregas
+    Route::get('/entregas/mias', [EntregaController::class, 'mias']);
+    Route::post('/entregas', [EntregaController::class, 'store']);
 
     // Tutor Egibide
     Route::get('/tutorEgibide/{tutorId}/alumnos', [TutorEgibideController::class, 'getAlumnosByCurrentTutor']);
     Route::get('/me/tutor-egibide', [TutorEgibideController::class, 'me']);
+    Route::post('/horasperiodo', [TutorEgibideController::class, 'horasperiodo']);
 
     // Tutor Empresa
     Route::get('/tutorEmpresa/{tutorId}/alumnos', [TutorEmpresaController::class, 'getAlumnosByCurrentInstructor']);
@@ -68,4 +77,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Seguimientos
     Route::get('/seguimientos', [SeguimientosController::class, 'index']);
-});
+}
+);

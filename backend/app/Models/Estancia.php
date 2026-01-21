@@ -32,7 +32,7 @@ class Estancia extends Model {
      * Get the alumno that owns this estancia
      */
     public function alumno(): BelongsTo {
-        return $this->belongsTo(Alumnos::class);
+        return $this->belongsTo(Alumnos::class,'alumno_id', 'id');
     }
 
     /**

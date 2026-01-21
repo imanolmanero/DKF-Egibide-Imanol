@@ -51,7 +51,7 @@ export default {
       <div class="sidebar-section">
         <h3>
           <RouterLink to="/alumno/seguimiento" class="sidebar-title"
-            >Seguimiento</RouterLink
+            >Entrega</RouterLink
           >
         </h3>
       </div>

@@ -9,7 +9,7 @@ export const useSeguimientosStore = defineStore(
     const seguimientos = ref<Seguimiento[]>([]);
     const authStore = useAuthStore();
 
-    async function fetchSeguimientos() {
+    async function fetchSeguimientos(alumnoId: number) {
       const response = await fetch(
         "http://localhost:8000/api/seguimientos",
         {

@@ -108,7 +108,7 @@ const volverAlumnos = () => {
       <!-- Cabecera del alumno -->
       <div class="card mb-4 shadow-sm">
         <div class="card-header">
-          <h3 class="mb-1">Asignar empresa</h3>
+          <h3 class="mb-1">Empresa</h3>
         </div>
         <div class="card-body">
           <p>

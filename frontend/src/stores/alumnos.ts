@@ -10,11 +10,51 @@ export const useAlumnosStore = defineStore("alumnos", () => {
   const asignaturas = ref<Asignatura[]>([]);
   const notaCuaderno = ref<number | null>(null);
   const notaCuadernoMsg = ref<string | null>(null);
+  const inicio = ref<any | null>(null);
+  const loadingInicio = ref(false);
 
   const authStore = useAuthStore();
 
   const message = ref<string | null>(null);
   const messageType = ref<"success" | "error">("success");
+
+  const entregas = ref<any[]>([]);
+  const loadingEntregas = ref(false);
+
+  async function fetchMisEntregas() {
+    loadingEntregas.value = true;
+    try {
+      const response = await fetch("http://localhost:8000/api/entregas/mias", {
+        headers: {
+          Authorization: authStore.token ? `Bearer ${authStore.token}` : "",
+          Accept: "application/json",}
+      });
+
+      if (!response.ok) throw new Error();
+      entregas.value = await response.json();
+    } finally {
+      loadingEntregas.value = false;
+    }
+  }
+
+  async function subirEntrega(file: File) {
+    const fd = new FormData();
+    fd.append("archivo", file);
+
+    const response = await fetch("http://localhost:8000/api/entregas", {
+      method: "POST",
+      headers: {
+        Authorization: authStore.token ? `Bearer ${authStore.token}` : "",
+        Accept: "application/json",
+      },
+      body: fd,
+    });
+
+    if (!response.ok) throw new Error();
+
+    const nueva = await response.json();
+    entregas.value.unshift(nueva);
+  }
 
   function setMessage(text: string, type: "success" | "error", timeout = 5000) {
     message.value = text;
@@ -63,6 +103,36 @@ export const useAlumnosStore = defineStore("alumnos", () => {
       : ([data] as Alumno[]);
   }
 
+    async function fetchInicio() {
+    loadingInicio.value = true;
+
+    try {
+      const response = await fetch("http://localhost:8000/api/me/inicio", {
+        method: "GET",
+        headers: {
+          Authorization: authStore.token ? `Bearer ${authStore.token}` : "",
+          Accept: "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setMessage(
+          data.message || "Error desconocido, inténtalo más tarde",
+          "error",
+        );
+        inicio.value = null;
+        return false;
+      }
+
+      inicio.value = data; // aquí tendrás alumno + estancia + empresa + tutor + instructor + horario
+      return true;
+    } finally {
+      loadingInicio.value = false;
+    }
+  }
+  
   async function fetchNotaCuaderno() {
     const response = await fetch("http://localhost:8000/api/me/nota-cuaderno", {
       method: "GET",
@@ -145,6 +215,29 @@ export const useAlumnosStore = defineStore("alumnos", () => {
     asignaturas.value = data as Asignatura[];
     return true;
   }
+  
+async function fetchEntregasAlumno(alumnoId: number) {
+  loadingEntregas.value = true;
+  try {
+    const response = await fetch(`http://localhost:8000/api/alumnos/${alumnoId}/entregas`, {
+      headers: {
+        Authorization: authStore.token ? `Bearer ${authStore.token}` : "",
+        Accept: "application/json",
+      },
+    });
+
+    if (!response.ok) throw new Error("Error al cargar entregas");
+
+    entregas.value = await response.json(); // Guardamos todas las entregas del alumno
+  } catch (err) {
+    console.error(err);
+    message.value = "Error al cargar las entregas del alumno";
+    messageType.value = "error";
+  } finally {
+    loadingEntregas.value = false;
+  }
+}
+
 
   return {
     alumnos,
@@ -154,10 +247,18 @@ export const useAlumnosStore = defineStore("alumnos", () => {
     asignaturas,
     message,
     messageType,
+    entregas,
+    loadingEntregas,
+    inicio,
+    loadingInicio,
+    fetchInicio,
+    subirEntrega,
+    fetchMisEntregas,
     fetchAlumnos,
     fetchAlumno,
     getAsignaturasAlumno,
     fetchNotaCuaderno,
     createAlumno,
+    fetchEntregasAlumno
   };
 });
