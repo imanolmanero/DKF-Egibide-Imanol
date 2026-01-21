@@ -49,8 +49,13 @@ onMounted(async () => {
 });
 
 const verDetalleAlumno = (alumnoId: number) => {
+  const routeName =
+    props.tipoTutor === "egibide"
+      ? "tutor_egibide-detalle_alumno"
+      : "tutor_empresa-detalle_alumno";
+
   router.push({
-    name: "tutor_empresa-detalle_alumno",
+    name: routeName,
     params: { alumnoId: alumnoId.toString() },
     query: {
       tipoTutor: props.tipoTutor,
