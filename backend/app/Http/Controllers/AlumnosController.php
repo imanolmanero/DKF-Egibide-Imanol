@@ -62,7 +62,7 @@ class AlumnosController extends Controller {
         ], 201);
     }
 
-    public function inicio(Request $request){
+    public function inicio(Request $request) {
         $user = $request->user();
 
         $alumno = $user->alumno;
@@ -79,7 +79,7 @@ class AlumnosController extends Controller {
             ->whereDate('fecha_inicio', '<=', $hoy)
             ->where(function ($q) use ($hoy) {
                 $q->whereNull('fecha_fin')
-                  ->orWhereDate('fecha_fin', '>=', $hoy);
+                    ->orWhereDate('fecha_fin', '>=', $hoy);
             })
             ->orderBy('fecha_inicio', 'desc')
             ->first();
@@ -103,8 +103,8 @@ class AlumnosController extends Controller {
 
         $estanciaActual->load([
             'empresa:id,nombre',
-            'tutor:id,nombre,apellidos,telefono',                
-            'instructor:id,nombre,apellidos,telefono,empresa_id', 
+            'tutor:id,nombre,apellidos,telefono',
+            'instructor:id,nombre,apellidos,telefono,empresa_id',
             'horariosDia.horariosTramo',
         ]);
 
@@ -118,17 +118,17 @@ class AlumnosController extends Controller {
                 'fecha_fin' => optional($estanciaActual->fecha_fin)->toDateString(),
                 'puesto' => $estanciaActual->puesto,
                 'empresa' => $estanciaActual->empresa ? [
-                'nombre' => $estanciaActual->empresa->nombre,
+                    'nombre' => $estanciaActual->empresa->nombre,
                 ] : null,
-                    'tutor' => $estanciaActual->tutor ? [
+                'tutor' => $estanciaActual->tutor ? [
                     'nombre' => $estanciaActual->tutor->nombre,
                     'apellidos' => $estanciaActual->tutor->apellidos,
-                    'telefono' => $estanciaActual->tutor->telefono, 
+                    'telefono' => $estanciaActual->tutor->telefono,
                 ] : null,
                 'instructor' => $estanciaActual->instructor ? [
                     'nombre' => $estanciaActual->instructor->nombre,
                     'apellidos' => $estanciaActual->instructor->apellidos,
-                    'telefono' => $estanciaActual->instructor->telefono, 
+                    'telefono' => $estanciaActual->instructor->telefono,
                 ] : null,
                 'horario' => $estanciaActual->horariosDia->map(function ($dia) {
                     return [
@@ -144,7 +144,7 @@ class AlumnosController extends Controller {
             ],
         ]);
     }
-    
+
     /**
      * Display the specified resource.
      */
@@ -234,10 +234,8 @@ class AlumnosController extends Controller {
 
         return response()->json($asignaturas, 200);
     }
-}
 
-    public function entregas($alumnoId)
-    {
+    public function entregas($alumnoId) {
         $entregas = DB::table('entregas')
             ->join('cuadernos_practicas', 'entregas.cuaderno_practicas_id', '=', 'cuadernos_practicas.id')
             ->join('estancias', 'cuadernos_practicas.estancia_id', '=', 'estancias.id')
