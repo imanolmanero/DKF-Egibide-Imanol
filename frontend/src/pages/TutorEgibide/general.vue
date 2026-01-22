@@ -126,13 +126,21 @@ const agregarSeguimiento = () => {
         </div>
 
         <ul v-else class="list-group">
-          <li v-for="seguimiento in seguimientosStore.seguimientos" :key="seguimiento.id" class="list-group-item">
-            <strong>
-              {{ seguimiento.fecha ? formatDate(seguimiento.fecha) : 'Por definir' }}
-            </strong> — {{ seguimiento.descripcion }}
+          <li v-for="seguimiento in seguimientosStore.seguimientos" :key="seguimiento.id" class="list-group-item d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <small class="text-muted">
+                {{ seguimiento.fecha ? formatDate(seguimiento.fecha) : 'Por definir' }}
+              </small>
+              <div>
+                <span class="badge bg-primary me-1">Acción: {{ seguimiento.accion }}</span>
+                <span class="badge bg-secondary">Via: {{ seguimiento.via || 'General' }}</span>
+              </div>
+            </div>
+            <p class="mb-0">{{ seguimiento.descripcion }}</p>
           </li>
         </ul>
       </div>
+
     </div>
   </div>
 </template>
