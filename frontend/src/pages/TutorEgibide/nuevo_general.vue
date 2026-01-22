@@ -20,7 +20,8 @@ const submitting = ref(false);
 
 // Campos del formulario
 const fecha = ref<string | null>(null);
-const accion = ref("General");
+const accion = ref("");
+const via = ref(""); // valor por defecto
 const descripcion = ref("");
 
 onMounted(async () => {
@@ -64,7 +65,7 @@ async function guardarSeguimiento() {
       fecha: fecha.value, // ya no es null
       accion: accion.value,
       descripcion: descripcion.value || "",
-      via: "General",
+      via: via.value
     };
 
     await seguimientosStore.nuevoSeguimiento(payload);
@@ -72,7 +73,11 @@ async function guardarSeguimiento() {
     //seguimientosStore.message.value = "Seguimiento creado correctamente";
     //seguimientosStore.messageType.value = "success";
 
+    // Mostrar toast primero
+    setTimeout(() => {
     router.back();
+    }, 1000);
+
   } catch (error: any) {
     console.error(error);
     //seguimientosStore.message.value = "Error al crear seguimiento: " + error.message;
@@ -91,7 +96,11 @@ const volverSeguimiento = () => { router.back(); router.back(); };
 </script>
 
 <template>
-  <Toast v-if="message" :message="message" :messageType="messageType" />
+  <Toast
+    v-if="seguimientosStore.message"
+    :message="seguimientosStore.message"
+    :messageType="seguimientosStore.messageType"
+  />
 
   <div class="container mt-4">
     <!-- Loading -->
@@ -120,14 +129,24 @@ const volverSeguimiento = () => { router.back(); router.back(); };
 
       <form @submit.prevent="guardarSeguimiento" class="mt-3">
         <div class="row g-3">
-          <div class="col-md-6">
+          <div class="col-md-4">
             <label for="fecha" class="form-label">Fecha</label>
             <input type="date" id="fecha" v-model="fecha" class="form-control" required />
           </div>
 
-          <div class="col-md-6">
+          <div class="col-md-4">
             <label for="accion" class="form-label">Acción</label>
-            <input type="text" id="accion" v-model="accion" class="form-control" placeholder="General, Extraordinario..." required />
+            <input type="text" id="accion" v-model="accion" class="form-control" placeholder="General, Revisión..." required />
+          </div>
+
+          <div class="col-md-4">
+            <label for="via" class="form-label">Vía</label>
+            <select id="via" v-model="via" class="form-select" required>
+              <option value="">Selecciona vía</option>
+              <option value="Mensaje">Mensaje</option>
+              <option value="Llamada">Llamada</option>
+              <option value="Reunión">Reunión</option>
+            </select>
           </div>
         </div>
 
