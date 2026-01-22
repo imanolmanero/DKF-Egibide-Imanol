@@ -46,9 +46,9 @@ function onFile(e: Event) {
   file.value = f;
 }
 
-function nombreEntrega(idx: number, fecha: string) {
+function nombreEntrega(idx: number) {
   const numero = alumnosStore.entregas.length - idx;
-  return `Entrega ${numero} · ${formatDate(fecha)}`;
+  return `Entrega ${numero}`;
 }
 
 async function subir() {
@@ -150,7 +150,7 @@ function descargar(id: number) {
             <tr v-for="(e, idx) in alumnosStore.entregas" :key="e.id">
               <td class="pl-5">
                 <div class="fw-semibold">
-                  {{ nombreEntrega(idx, e.fecha) }}
+                  {{ nombreEntrega(idx) }}
                 </div>
               </td>
               <td>{{ formatDate(e.fecha) }}</td>
