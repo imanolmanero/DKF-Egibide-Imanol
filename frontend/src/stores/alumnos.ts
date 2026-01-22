@@ -12,7 +12,7 @@ export const useAlumnosStore = defineStore("alumnos", () => {
   const notaCuaderno = ref<number | null>(null);
   const notasEgibide = ref<NotaEgibide[]>([]);
   const inicio = ref<any | null>(null);
-  const loadingInicio = ref(false);class="fs-3"
+  const loadingInicio = ref(false);
 
   const authStore = useAuthStore();
 
