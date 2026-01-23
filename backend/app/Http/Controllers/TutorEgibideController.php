@@ -114,4 +114,47 @@ class TutorEgibideController extends Controller {
             'tipo' => $user->tipo,
         ]);
     }
+
+     /**
+     * Guardar o actualizar horario y calendario de una estancia.
+     */
+    public function horasperiodo(Request $request)
+    {
+        // Validar los datos
+        $validated = $request->validate([
+            'alumno_id'     => 'required|exists:alumnos,id',
+            'fecha_inicio'  => 'required|date',
+            'fecha_fin'     => 'nullable|date|after_or_equal:fecha_inicio',
+            'horas_totales' => 'required|integer|min:1',
+        ]);
+
+        try {
+            // Obtener tutor logueado
+            $user = $request->user();
+            $tutor = TutorEgibide::where('user_id', $user->id)->firstOrFail();
+
+            // Crear o actualizar estancia por alumno_id
+            $estancia = Estancia::updateOrCreate(
+                ['alumno_id' => $validated['alumno_id']], // Condición para actualizar
+                [
+                    'fecha_inicio'  => $validated['fecha_inicio'],
+                    'fecha_fin'     => $validated['fecha_fin'] ?? null,
+                    'horas_totales' => $validated['horas_totales'],
+                    'tutor_id'      => $tutor->id,
+                ]
+            );
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Horario y calendario guardados correctamente',
+                'estancia' => $estancia,
+            ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al guardar la estancia: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
 }
