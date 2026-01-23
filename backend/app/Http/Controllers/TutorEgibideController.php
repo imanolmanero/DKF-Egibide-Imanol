@@ -65,11 +65,9 @@ class TutorEgibideController extends Controller {
         return response()->json($empresa);
     }
     
-    public function inicioTutor(Request $request)
-{
+    public function inicioTutor(Request $request){
     $user = $request->user();
 
-    // Relación: User -> tutorEgibide()
     $tutor = $user->tutorEgibide;
 
     if (!$tutor) {
@@ -108,38 +106,6 @@ class TutorEgibideController extends Controller {
                 'telefono'  => $tutor->telefono,
                 'ciudad'    => $tutor->ciudad,
                 'email'     => $email,
-    public function inicioTutor(Request $request)
-    {
-        $user = $request->user();
-
-        // Relación: User -> tutorEgibide()
-        $tutor = $user->tutorEgibide;
-
-        if (!$tutor) {
-            return response()->json([
-                'message' => 'El usuario no tiene tutor egibide asociado.'
-            ], 404);
-        }
-
-        $email = $user->email;
-
-        $alumnosAsignados = $tutor->estancias()
-            ->whereNotNull('alumno_id')
-            ->distinct('alumno_id')
-            ->count('alumno_id');
-
-        $empresasAsignadas = $tutor->estancias()
-            ->whereNotNull('empresa_id')
-            ->distinct('empresa_id')
-            ->count('empresa_id');
-
-        return response()->json([
-            'tutor' => [
-                'nombre'   => $tutor->nombre,
-                'apellidos'=> $tutor->apellidos,
-                'telefono' => $tutor->telefono,
-                'ciudad'   => $tutor->ciudad,
-                'email'    => $email,
             ],
             'counts' => [
                 'alumnos_asignados'  => $alumnosAsignados,
@@ -147,6 +113,7 @@ class TutorEgibideController extends Controller {
             ],
         ]);
     }
+    
     /**
      * Store a newly created resource in storage.
      */
