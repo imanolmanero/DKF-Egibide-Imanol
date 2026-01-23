@@ -13,6 +13,7 @@ use App\Http\Controllers\TutorEgibideController;
 use App\Http\Controllers\TutorEmpresaController;
 use App\Http\Controllers\SeguimientosController;
 use App\Http\Controllers\EntregaController;
+use App\Http\Controllers\AdminController;
 
 Route::post('/login', [AuthController::class, 'authenticate'])->name('authenticate');
 Route::get('/entregas/{entrega}/archivo', [EntregaController::class, 'archivo']);
@@ -88,6 +89,9 @@ Route::middleware('auth:sanctum')->group(
         Route::get('/seguimientos/alumno/{alumno_Id}', [SeguimientosController::class, 'seguimientosAlumno']);
         Route::post('/nuevo-seguimiento', [SeguimientosController::class, 'nuevoSeguimiento']);
         Route::delete('/seguimientos/{seguimiento}', [SeguimientosController::class, 'destroy']);
+
+        //Admin
+        Route::get('/admin/inicio', [AdminController::class, 'inicioAdmin']);
         Route::get('admin/ciclos/{ciclo}', [CiclosController::class, 'show']);
     }
 );

@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Ciclos extends Model {
+    
+    protected $table = 'ciclos';
     protected $fillable = [
         'nombre',
         'familia_profesional_id'

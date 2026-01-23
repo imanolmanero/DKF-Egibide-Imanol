@@ -22,6 +22,15 @@ class EmpresaSeeder extends Seeder {
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'cif' => 'B87654321',
+                'nombre' => 'Innovatek Álava SL',
+                'telefono' => '945223344',
+                'email' => 'contacto@innovatek-alava.com',
+                'direccion' => 'Avda. Gasteiz 45, Vitoria-Gasteiz',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 }
