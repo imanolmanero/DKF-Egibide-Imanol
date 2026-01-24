@@ -28,7 +28,8 @@ export const useAlumnosStore = defineStore("alumnos", () => {
       const response = await fetch("http://localhost:8000/api/entregas/mias", {
         headers: {
           Authorization: authStore.token ? `Bearer ${authStore.token}` : "",
-          Accept: "application/json",}
+          Accept: "application/json",
+        },
       });
 
       if (!response.ok) throw new Error();
@@ -85,9 +86,7 @@ export const useAlumnosStore = defineStore("alumnos", () => {
       await fetch(`http://localhost:8000/api/entregas/${id}`, {
         method: "DELETE",
         headers: {
-          Authorization: authStore.token
-            ? `Bearer ${authStore.token}`
-            : "",
+          Authorization: authStore.token ? `Bearer ${authStore.token}` : "",
           Accept: "application/json",
         },
       });
@@ -123,7 +122,7 @@ export const useAlumnosStore = defineStore("alumnos", () => {
       : ([data] as Alumno[]);
   }
 
-    async function fetchInicio() {
+  async function fetchInicio() {
     loadingInicio.value = true;
 
     try {
@@ -209,16 +208,23 @@ export const useAlumnosStore = defineStore("alumnos", () => {
     return true;
   }
 
-  async function guardarNotasEgibideByAlumno(alumno_id: number, nota: number, asignatura_id: number) {
-    const response = await fetch(`http://localhost:8000/api/notas/alumno/egibide/guardar`, {
-      method: "POST",
-      headers: {
-        Authorization: authStore.token ? `Bearer ${authStore.token}` : "",
-        Accept: "application/json",
-        "Content-Type": "application/json",
+  async function guardarNotasEgibideByAlumno(
+    alumno_id: number,
+    nota: number,
+    asignatura_id: number,
+  ) {
+    const response = await fetch(
+      `http://localhost:8000/api/notas/alumno/egibide/guardar`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: authStore.token ? `Bearer ${authStore.token}` : "",
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ alumno_id, nota, asignatura_id }),
       },
-      body: JSON.stringify({alumno_id, nota, asignatura_id}),
-    });
+    );
 
     const data = await response.json();
 
@@ -230,7 +236,10 @@ export const useAlumnosStore = defineStore("alumnos", () => {
       return false;
     }
 
-    setMessage(data.message || "Nota de Egibide insertada correctamente", "success");
+    setMessage(
+      data.message || "Nota de Egibide insertada correctamente",
+      "success",
+    );
     return true;
   }
 
@@ -261,15 +270,18 @@ export const useAlumnosStore = defineStore("alumnos", () => {
   }
 
   async function guardarNotaCuadernoByAlumno(alumno_id: number, nota: number) {
-    const response = await fetch(`http://localhost:8000/api/notas/alumno/cuaderno/guardar`, {
-      method: "POST",
-      headers: {
-        Authorization: authStore.token ? `Bearer ${authStore.token}` : "",
-        Accept: "application/json",
-        "Content-Type": "application/json",
+    const response = await fetch(
+      `http://localhost:8000/api/notas/alumno/cuaderno/guardar`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: authStore.token ? `Bearer ${authStore.token}` : "",
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ alumno_id, nota }),
       },
-      body: JSON.stringify({alumno_id, nota}),
-    });
+    );
 
     const data = await response.json();
 
@@ -281,7 +293,10 @@ export const useAlumnosStore = defineStore("alumnos", () => {
       return false;
     }
 
-    setMessage(data.message || "Nota de Egibide insertada correctamente", "success");
+    setMessage(
+      data.message || "Nota de Egibide insertada correctamente",
+      "success",
+    );
     return true;
   }
 
@@ -314,12 +329,15 @@ export const useAlumnosStore = defineStore("alumnos", () => {
   async function fetchEntregasAlumno(alumnoId: number) {
     loadingEntregas.value = true;
     try {
-      const response = await fetch(`http://localhost:8000/api/alumnos/${alumnoId}/entregas`, {
-        headers: {
-          Authorization: authStore.token ? `Bearer ${authStore.token}` : "",
-          Accept: "application/json",
+      const response = await fetch(
+        `http://localhost:8000/api/alumnos/${alumnoId}/entregas`,
+        {
+          headers: {
+            Authorization: authStore.token ? `Bearer ${authStore.token}` : "",
+            Accept: "application/json",
+          },
         },
-      });
+      );
 
       if (!response.ok) throw new Error("Error al cargar entregas");
 
@@ -332,7 +350,6 @@ export const useAlumnosStore = defineStore("alumnos", () => {
       loadingEntregas.value = false;
     }
   }
-
 
   return {
     alumnos,
@@ -358,6 +375,6 @@ export const useAlumnosStore = defineStore("alumnos", () => {
     guardarNotasEgibideByAlumno,
     getNotasEgibideByAlumno,
     guardarNotaCuadernoByAlumno,
-    getNotaCuadernoByAlumno
+    getNotaCuadernoByAlumno,
   };
 });

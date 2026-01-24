@@ -30,6 +30,8 @@ Route::middleware('auth:sanctum')->group(
         // Ciclos
         Route::get('/ciclos', [CiclosController::class, 'index']);
         Route::post('/ciclos', [CiclosController::class, 'store']);
+        Route::post('/ciclos/importar', [CiclosController::class, 'importarCSV']);
+        Route::get('/ciclos/plantilla', [CiclosController::class, 'descargarPlantillaCSV']);
 
         // Competencias
         Route::get('/competencias', [CompetenciasController::class, 'index']);
