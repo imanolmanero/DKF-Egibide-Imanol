@@ -336,7 +336,7 @@ const router = createRouter({
           path: "admin/empresas/:empresaId",
           name: "admin-detalle_empresa",
           components: {
-            main: () => import("@/pages/TutorEgibide/detallesEmpresa.vue"),
+            main: () => import("@/pages/Admin/detallesEmpresa.vue"),
           },
           meta: { role: "admin" },
         },

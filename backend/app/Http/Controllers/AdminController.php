@@ -45,6 +45,16 @@ class AdminController extends Controller
         //
     }
 
+    public function detalleEmpresa($empresaId)
+{
+    $empresa = Empresas::with([
+            // instructores por relación belongsToMany (distinct ya lo tienes)
+            'instructores:id,nombre,apellidos,telefono,ciudad,empresa_id',
+        ])->findOrFail($empresaId);
+
+        return response()->json($empresa);
+    }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -56,13 +66,9 @@ class AdminController extends Controller
     /**
      * Display the specified resource.
      */
-    public function alumnos($id)
-{
-        $alumno = \App\Models\Alumnos::with([
-            'estancias.empresa'
-        ])->findOrFail($id);
-
-        return response()->json($alumno);
+    public function show(string $id)
+    {
+        //
     }
 
     /**
@@ -88,4 +94,19 @@ class AdminController extends Controller
     {
         //
     }
+
+    public function detalleAlumno(Request $request, $id){
+        $user = $request->user();
+
+        if (($user->role ?? null) !== 'admin') {
+            return response()->json(['message' => 'No autorizado.'], 403);
+        }
+
+        $alumno = Alumnos::with([
+            'estancias.empresa:id,nombre',
+        ])->findOrFail($id);
+
+        return response()->json($alumno);
+    }
+
 }
