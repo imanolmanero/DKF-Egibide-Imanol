@@ -12,7 +12,7 @@ const props = defineProps<{
 const empresaStore = useEmpresasStore();
 
 const empresas = ref<Empresa[]>([]);
-const empresaSeleccionada = ref<number[]>([]);
+const empresaSeleccionada = ref<number>(0);
 const isLoading = ref(true);
 
 onMounted(async () => {
