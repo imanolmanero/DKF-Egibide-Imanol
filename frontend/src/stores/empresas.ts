@@ -123,6 +123,7 @@ export const useEmpresasStore = defineStore("empresas", () => {
     );
 
     const tutorEgibideStore = useTutorEgibideStore();
+    
     // Actualiza el alumno localmente para la UI sin recargar
     tutorEgibideStore.updateAlumnoEmpresa(alumno_id, empresa_id);
 

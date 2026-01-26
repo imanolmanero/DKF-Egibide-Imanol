@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Empresas;
 use App\Models\Estancia;
+use App\Models\TutorEmpresa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -102,14 +103,23 @@ class EmpresasController extends Controller {
         $empresa_id = $validated['empresa_id'];
 
         $estancia = Estancia::where('alumno_id', $alumno_id)->firstOrFail();
+        $instructor = TutorEmpresa::where('empresa_id', $empresa_id)->first();
+
+        if (!$instructor) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No hay instructor asignado a esta empresa'
+            ], 404);
+        }
 
         $estancia->update([
             'empresa_id' => $empresa_id,
+            'instructor_id' => $instructor->id,
         ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Empresa asignada correctamente a la estancia',
+            'message' => 'Empresa e instructor asignados correctamente a la estancia',
         ], 200);
     }
 }

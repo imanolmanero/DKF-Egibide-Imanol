@@ -225,11 +225,13 @@ const formatDate = (dateString: string) => {
                 <strong class="ms-2">{{ alumno.pivot.puesto }}</strong>
               </div>
             </div>
-            <div class="col-md-6" v-if="alumno.pivot?.horas_totales">
+            <div class="col-md-6" v-if="alumno.pivot">
               <div class="info-item">
                 <i class="bi bi-clock-fill text-primary me-2"></i>
                 <span class="text-muted">Horas totales:</span>
-                <strong class="ms-2">{{ alumno.pivot.horas_totales }}h</strong>
+                <strong class="ms-2">
+                  {{ alumno.pivot.horas_totales ?? 'Sin asignar' }}
+                </strong>
               </div>
             </div>
             <div class="col-md-6" v-if="alumno.pivot?.fecha_inicio || alumno.pivot?.fecha_fin">
