@@ -60,7 +60,7 @@ class AlumnosController extends Controller {
         // ESTANCIA
         Estancia::create([
             'puesto' => 'Sin asignar',
-            'fecha_inicio' => now()->subDays(14)->toDateString(),
+            'fecha_inicio' => now()->toDateString(),
             'horas_totales' => 0,
             'alumno_id' => $alumno->id,
             'tutor_id' => $validated['tutor'],

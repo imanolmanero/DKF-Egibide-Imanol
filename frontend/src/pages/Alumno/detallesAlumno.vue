@@ -211,11 +211,13 @@ const formatDate = (dateString: string) => {
                 <strong class="ms-2">{{ alumno.ciudad }}</strong>
               </div>
             </div>
-            <div class="col-md-6" v-if="alumno.pivot?.empresa_id">
+            <div class="col-md-6" v-if="alumno.pivot">
               <div class="info-item">
                 <i class="bi bi-geo-alt-fill text-primary me-2"></i>
                 <span class="text-muted">Empresa:</span>
-                <strong class="ms-2">{{ empresa?.nombre }}</strong>
+                <strong class="ms-2">
+                  {{ empresa?.nombre ?? 'Sin asignar' }}
+                </strong>
               </div>
             </div>
             <div class="col-md-6" v-if="alumno.pivot?.puesto">
@@ -230,7 +232,7 @@ const formatDate = (dateString: string) => {
                 <i class="bi bi-clock-fill text-primary me-2"></i>
                 <span class="text-muted">Horas totales:</span>
                 <strong class="ms-2">
-                  {{ alumno.pivot.horas_totales ?? 'Sin asignar' }}
+                  {{ alumno.pivot.horas_totales ? alumno.pivot.horas_totales + 'h' : 'Sin asignar' }}               
                 </strong>
               </div>
             </div>
