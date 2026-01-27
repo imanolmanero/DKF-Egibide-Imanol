@@ -116,9 +116,8 @@ export const useCiclosStore = defineStore("ciclos", () => {
       headers: {
         Authorization: authStore.token ? `Bearer ${authStore.token}` : "",
         Accept: "application/json",
-        "Content-Type": "application/json",
       },
-      body: JSON.stringify(formData),
+      body: formData,
     });
 
     const data = await response.json();

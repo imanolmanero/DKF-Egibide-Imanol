@@ -4,6 +4,10 @@ import { useAuthStore } from "@/stores/auth";
 import { useCiclosStore } from "@/stores/ciclos";
 import Toast from "../Notification/Toast.vue";
 
+const props = defineProps<{
+  cicloId: number | string;
+}>();
+
 const ciclosStore = useCiclosStore();
 
 const archivoSeleccionado = ref<File | null>(null);
@@ -34,7 +38,7 @@ async function importarCSV() {
   }
 
   const formData = new FormData();
-  formData.append("ciclo_id", "2");
+  formData.append("ciclo_id", String(props.cicloId));
   formData.append("csv_file", archivoSeleccionado.value);
 
   cargando.value = true;

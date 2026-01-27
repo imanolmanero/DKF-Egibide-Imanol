@@ -67,7 +67,7 @@ class CiclosController extends Controller {
 
     public function importarCSV(Request $request) {
         $validator = Validator::make($request->all(), [
-            'ciclo_id' => 'required|integer|exists:ciclos,id',
+            'ciclo_id' => 'required',
             'csv_file' => 'required|file|mimes:csv,txt|max:10240'
         ]);
 

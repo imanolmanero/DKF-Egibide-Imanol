@@ -67,7 +67,7 @@ const volver = () => router.back();
 
 <template>
   <div class="container mt-4">
-    <UploadCiclosCSV />
+    <UploadCiclosCSV :cicloId="cicloId" />
 
     <!-- Loading -->
     <div v-if="isLoading" class="text-center py-5">
