@@ -1,16 +1,20 @@
-FROM node:20
+# Build
+FROM node:20-alpine AS build
 
 WORKDIR /app
 
-# Instalar dependencias
 COPY ../../frontend/package*.json ./
-RUN npm install
+RUN npm ci
 
-# Copiar código
-COPY ../../frontend .
+COPY ../../frontend/ .
+RUN npm run build
 
-# Exponer Vite
-EXPOSE 5173
+# Servir web compilada
+FROM httpd:2.4-alpine
 
-# Arrancar Vite
-CMD ["npm", "run", "dev", "--", "--host"]
+RUN sed -i 's/#LoadModule rewrite_module/LoadModule rewrite_module/' /usr/local/apache2/conf/httpd.conf
+
+COPY --from=build /app/dist /usr/local/apache2/htdocs/
+COPY docker/frontend/custom-vhost.conf /usr/local/apache2/conf.d/custom-vhost.conf
+
+EXPOSE 80
