@@ -1,36 +1,40 @@
 FROM php:8.4-apache
 
-# Instalar dependencias del sistema
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
     libzip-dev \
-    && docker-php-ext-install pdo pdo_mysql zip
+    zip \
+    && docker-php-ext-install \
+    pdo \
+    pdo_mysql \
+    zip
 
-# Activar mod_rewrite (Laravel lo necesita)
 RUN a2enmod rewrite
 
-# Instalar Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Directorio de trabajo
 WORKDIR /var/www/html
 
-# Copiar código
-COPY ../../backend/ /var/www/html
+COPY ../../backend/ .
 
-# Instalar dependencias PHP
 RUN composer install --no-dev --optimize-autoloader
 
-# Permisos Laravel
-RUN chown -R www-data:www-data storage bootstrap/cache
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 775 storage bootstrap/cache
 
-# Apache apunta a /public
+COPY docker/backend/apache.conf /etc/apache2/sites-available/000-default.conf
+
+# Carpeta public de apache
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' \
     /etc/apache2/sites-available/*.conf \
     /etc/apache2/apache2.conf
 
-EXPOSE 80
+# Script inicial que ejecuta las migraciones y los seeders.
+COPY docker/backend/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-CMD ["apache2-foreground"]
+ENTRYPOINT ["/entrypoint.sh"]
+
+EXPOSE 80

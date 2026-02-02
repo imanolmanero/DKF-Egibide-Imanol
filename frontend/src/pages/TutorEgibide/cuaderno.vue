@@ -7,6 +7,8 @@ import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 
+const baseURL = import.meta.env.VITE_baseURL_URL;
+
 // Route & Router
 const route = useRoute();
 const router = useRouter();
@@ -27,7 +29,7 @@ const tutorId = route.query.tutorId as string;
 
 // Función para descargar entregas
 function urlArchivo(id: number) {
-  return `http://localhost:8000/api/entregas/${id}/archivo?token=${authStore.token}`;
+  return `${baseURL}/api/entregas/${id}/archivo?token=${authStore.token}`;
 }
 
 function descargar(id: number) {
@@ -53,7 +55,8 @@ onMounted(async () => {
     // Buscar alumno
     alumno.value =
       tutorEgibideStore.alumnosAsignados.find(
-        (a) => Number(a.pivot?.alumno_id) === alumnoId || Number(a.id) === alumnoId
+        (a) =>
+          Number(a.pivot?.alumno_id) === alumnoId || Number(a.id) === alumnoId,
       ) || null;
 
     if (!alumno.value) {
@@ -99,9 +102,14 @@ function formatDate(fecha: string) {
     </div>
 
     <!-- Alumno no encontrado -->
-    <div v-else-if="!alumno" class="alert alert-danger d-flex align-items-center">
+    <div
+      v-else-if="!alumno"
+      class="alert alert-danger d-flex align-items-center"
+    >
       <div>Alumno no encontrado</div>
-      <button class="btn btn-sm btn-outline-danger ms-3" @click="volver">Volver</button>
+      <button class="btn btn-sm btn-outline-danger ms-3" @click="volver">
+        Volver
+      </button>
     </div>
 
     <!-- Contenido Cuaderno -->
@@ -119,9 +127,7 @@ function formatDate(fecha: string) {
             </a>
           </li>
           <li class="breadcrumb-item">
-            <a href="#" @click.prevent="volver">
-              Seguimiento
-            </a>
+            <a href="#" @click.prevent="volver"> Seguimiento </a>
           </li>
           <li class="breadcrumb-item active text-capitalize">Cuaderno</li>
         </ol>
@@ -138,29 +144,35 @@ function formatDate(fecha: string) {
             <span class="ms-2">Cargando...</span>
           </div>
 
-          <div v-else-if="alumnosStore.entregas.length === 0" class="p-3 text-muted">
+          <div
+            v-else-if="alumnosStore.entregas.length === 0"
+            class="p-3 text-muted"
+          >
             Todavía no hay entregas.
           </div>
 
-        <table v-else class="table table-hover mb-0">
-          <thead class="table-light">
-            <tr>
-              <th style="width: 160px;">Archivo</th>
-              <th style="width: 160px;">Fecha</th>
-              <th style="width: 220px;">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(e, idx) in alumnosStore.entregas" :key="e.id">
-              <td>
-                <div class="fw-semibold">
-                  Entrega {{ alumnosStore.entregas.length - idx }}
-                </div>
-              </td>
-
-              <td>{{ formatDate(e.fecha) }}</td>
+          <table v-else class="table table-hover mb-0">
+            <thead class="table-light">
+              <tr>
+                <th style="width: 160px">Archivo</th>
+                <th style="width: 160px">Fecha</th>
+                <th style="width: 220px">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(e, idx) in alumnosStore.entregas" :key="e.id">
                 <td>
-                  <button class="btn btn-sm btn-outline-primary" @click="descargar(e.id)">
+                  <div class="fw-semibold">
+                    Entrega {{ alumnosStore.entregas.length - idx }}
+                  </div>
+                </td>
+
+                <td>{{ formatDate(e.fecha) }}</td>
+                <td>
+                  <button
+                    class="btn btn-sm btn-outline-primary"
+                    @click="descargar(e.id)"
+                  >
                     Descargar
                   </button>
                 </td>

@@ -1,95 +1,63 @@
-version: "3.9"
+version: '3.9'
 
 services:
-
   #Base de datos
   db:
     image: mysql:8.0.33
-    container_name: fct_mysql
-    #restart: unless-stopped
+    container_name: mysqlServer
+    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: dkf_egibide
       MYSQL_USER: grupo04
       MYSQL_PASSWORD: grupo04
     ports:
-      - "3306:3306"
+      - '3306:3306'
     volumes:
-      - db_data:/var/lib/mysql
+      - mysql-data:/var/lib/mysql
     networks:
-      - fct_net
+      - app-network
 
   #Backend
   backend:
     build:
       context: .
       dockerfile: docker/backend/Dockerfile
-    container_name: fct_laravel
+    container_name: backend-egibide
     restart: unless-stopped
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: dkf_egibide
+      DB_USERNAME: grupo04
+      DB_PASSWORD: grupo04
     ports:
-      - "8000:80"
+      - '8000:80'
     depends_on:
       - db
     networks:
-      - fct_net
+      - app-network
 
   #Frontend
   frontend:
     build:
       context: .
       dockerfile: docker/frontend/Dockerfile
-    container_name: fct_vue
+    container_name: frontend-egibide
     restart: unless-stopped
-    ports:
-      - "5173:5173"
-    networks:
-      - fct_net
-
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: fct_phpmyadmin
-    restart: unless-stopped
-    ports:
-      - "8080:80"
     environment:
-      PMA_HOST: db
-      PMA_USER: root
-      PMA_PASSWORD: root
+      VITE_API_BASE_URL: http://backend:80
+    ports:
+      - '80:80'
     depends_on:
-      - db
+      - backend
     networks:
-      - fct_net
+      - app-network
 
-#Volumenes
 volumes:
-  db_data:
+  mysql-data:
 
-#Redes
 networks:
-  fct_net:
+  app-network:
     driver: bridge
-
-# Servicio     URL
-# Laravel API  http://localhost:8000 http://localhost:8000
-# Vue          http://localhost:5173 http://localhost:5173
-# phpMyAdmin   http://localhost:8080 http://localhost:8080
-# MySQL        localhost:3306
-
-#Para que funcione hacer llo siguiente:
-#En el .env poner la configuracion nueva y DB_HOST=-> nombre del servicio, no localhost.
-#Entrar a la carpeta Gestor-de-estancias-formativas
-#cp Backend/gef/.env.example Backend/gef/.env
-#nano Backend/gef/.env
-#Dejarlo al gusto
-#nano Frontend/gef/src/axios.js
-#nano Frontendgef/src/services/api.js
-#docker-compose down -v
-#docker-compose build --no-cache
-#docker-compose up -d
-#docker exec -it fct_laravel bash
-#php artisan key:generate
-#php artisan migrate:fresh
-#php artisan optimize:clear
-#php artisan storage:link
-#php artisan db:seed
-#En los 2 de arriba cambiar localhost por la ip del servidor
