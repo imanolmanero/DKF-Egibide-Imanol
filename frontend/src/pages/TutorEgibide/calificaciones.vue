@@ -251,6 +251,7 @@ const setNotaEgibide = (asignaturaId: number, e: Event) => {
                 <th class="bg-secondary text-light">Cuaderno <br> 20%</th>
               </tr>
             </thead>
+            
             <tbody>
               <tr v-for="(asignatura, index) in asignaturas" :key="asignatura.id">
                 <td class="fw-bold">{{ asignatura.codigo_asignatura }}</td>
