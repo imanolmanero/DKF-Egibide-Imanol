@@ -249,13 +249,15 @@ const volverAlumnos = () => {
               <tr v-for="(asignatura, index) in asignaturas" :key="asignatura.id">
                 <td class="fw-bold">{{ asignatura.codigo_asignatura }}</td>
                 <td>
+                  <span v-if="!editando">{{ notasEgibidePorAsignatura[asignatura.id] }}</span>
                   <input
+                    v-else
+                    style="background-color: white;"
                     type="number"
                     step="0.01"
                     min="0"
                     max="10"
                     v-model.number="notasEgibidePorAsignatura[asignatura.id]"
-                    :disabled="!editando"
                     @blur="guardarNotaEgibide(asignatura.id)"
                     class="form-control form-control-sm text-center"
                   />
@@ -265,7 +267,10 @@ const volverAlumnos = () => {
                   {{ notaTransversal }}
                 </td>
                 <td v-if="index === 0" :rowspan="asignaturas.length">
+                  <span v-if="!editando">{{ notaCuaderno }}</span>
                   <input
+                    v-else
+                    style="background-color: white;"
                     type="number"
                     step="0.01"
                     min="0"
