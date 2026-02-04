@@ -255,14 +255,16 @@ const setNotaEgibide = (asignaturaId: number, e: Event) => {
               <tr v-for="(asignatura, index) in asignaturas" :key="asignatura.id">
                 <td class="fw-bold">{{ asignatura.codigo_asignatura }}</td>
                 <td>
+                  <span v-if="!editando">{{ notasEgibidePorAsignatura[asignatura.id] }}</span>
                   <input
+                    v-else
+                    style="background-color: white;"
                     type="number"
                     step="0.01"
                     min="0"
                     max="10"
                     @input="setNotaEgibide(asignatura.id, $event)"
                     v-model.number="notasEgibidePorAsignatura[asignatura.id]"
-                    :disabled="!editando"
                     @blur="guardarNotaEgibide(asignatura.id)"
                     class="form-control form-control-sm text-center"
                   />
@@ -272,7 +274,10 @@ const setNotaEgibide = (asignaturaId: number, e: Event) => {
                   {{ notaTransversal }}
                 </td>
                 <td v-if="index === 0" :rowspan="asignaturas.length">
+                  <span v-if="!editando">{{ notaCuaderno }}</span>
                   <input
+                    v-else
+                    style="background-color: white;"
                     type="number"
                     step="0.01"
                     min="0"
