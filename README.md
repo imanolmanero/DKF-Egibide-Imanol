@@ -9,7 +9,7 @@ Facilita la coordinación entre **alumnado, empresas y profesorado**, ofreciendo
 
 La aplicación se encuentra desplegada y accesible en el siguiente entorno:
 
-- **URL:** http://172.20.228.41:5173
+- **URL:** http://172.20.228.41
 
 ### 🔐 Credenciales de acceso (usuarios de prueba)
 
