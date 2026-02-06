@@ -13,7 +13,8 @@ class Ciclos extends Model {
     protected $table = 'ciclos';
     protected $fillable = [
         'nombre',
-        'familia_profesional_id'
+        'familia_profesional_id',
+        'codigo'
     ];
 
     /**

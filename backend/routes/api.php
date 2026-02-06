@@ -14,7 +14,7 @@ use App\Http\Controllers\TutorEmpresaController;
 use App\Http\Controllers\SeguimientosController;
 use App\Http\Controllers\EntregaController;
 use App\Http\Controllers\AdminController;
-
+use App\Http\Controllers\ImportacionController;
 Route::post('/login', [AuthController::class, 'authenticate'])->name('authenticate');
 Route::get('/entregas/{entrega}/archivo', [EntregaController::class, 'archivo']);
 
@@ -23,7 +23,7 @@ Route::middleware('auth:sanctum')->group(
         Route::get('/user', function (Request $request) {
             return $request->user();
         });
-
+        Route::post('/importar-datos', [ImportacionController::class, 'upload']);
         // Familias Profesionales
         Route::get('/familiasProfesionales', [FamiliaProfesionalController::class, 'index']);
 
@@ -58,7 +58,7 @@ Route::middleware('auth:sanctum')->group(
         Route::post('/notas/alumno/cuaderno/guardar', [NotasController::class, 'guardarNotasCuaderno']);
 
         // Empresas
-        Route::get('/empresa', [EmpresasController::class, 'index']);
+        Route::get('/empresas', [EmpresasController::class, 'index']);
         Route::post('/empresa', [EmpresasController::class, 'store']);
         Route::get('/me/empresa', [EmpresasController::class, 'miEmpresa']);
         Route::post('/empresas/asignar', [EmpresasController::class, 'storeEmpresaAsignada']);

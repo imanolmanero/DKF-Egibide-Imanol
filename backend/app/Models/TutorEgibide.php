@@ -15,7 +15,8 @@ class TutorEgibide extends Model {
         'apellidos',
         'telefono',
         'ciudad',
-        'user_id'
+        'user_id',
+        'alias'
     ];
 
     /**

@@ -13,7 +13,9 @@ class Alumnos extends Model {
         'apellidos',
         'telefono',
         'ciudad',
-        'user_id'
+        'user_id',
+        'dni',
+        'matricula_id'
     ];
 
     /**

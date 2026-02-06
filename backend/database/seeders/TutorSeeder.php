@@ -15,6 +15,7 @@ class TutorSeeder extends Seeder {
                 'apellidos' => 'Rivas',
                 'telefono' => '600333444',
                 'ciudad' => 'Vitoria-Gasteiz',
+                'alias' => 'U0000',
                 'user_id' => 3,
                 'created_at' => now(),
                 'updated_at' => now(),

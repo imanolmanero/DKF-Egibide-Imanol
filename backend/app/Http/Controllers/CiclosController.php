@@ -5,16 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Ciclos;
 use App\Models\Curso;
 use Illuminate\Http\Request;
-use App\Services\CicloImportService;
+
 use Illuminate\Support\Facades\Validator;
 
 class CiclosController extends Controller {
     protected $importService;
 
-    public function __construct(CicloImportService $importService) {
-        $this->importService = $importService;
-    }
 
+    
     /**
      * Display a listing of the resource.
      */
