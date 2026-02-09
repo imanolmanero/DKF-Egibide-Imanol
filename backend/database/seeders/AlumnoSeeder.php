@@ -21,8 +21,10 @@ class AlumnoSeeder extends Seeder
         DB::table('alumnos')->insert([
             [
                 'nombre' => 'Iker',
+                'dni' => '12345678A',
                 'apellidos' => 'Hernaez',
                 'telefono' => '600111222',
+                'matricula_id' => '2023-001',
                 'ciudad' => 'Vitoria-Gasteiz',
                 'user_id' => $userIker,
                 'curso_id' => $cursoId,
@@ -32,8 +34,10 @@ class AlumnoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Naia',
+                'dni' => '87654321B',
                 'apellidos' => 'Garrido',
                 'telefono' => '620111222',
+                'matricula_id' => '2023-002',
                 'ciudad' => 'Vitoria-Gasteiz',
                 'user_id' => $userNaia,
                 'curso_id' => $cursoId,
@@ -43,8 +47,10 @@ class AlumnoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Preueba',
+                'dni' => '11111111C',
                 'apellidos' => 'dasda',
                 'telefono' => '123456789',
+                'matricula_id' => '2023-003',
                 'ciudad' => 'Vitoria-Gasteiz',
                 'user_id' => $userPrueba,
                 'curso_id' => $cursoId,

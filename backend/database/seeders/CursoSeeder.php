@@ -11,13 +11,13 @@ class CursoSeeder extends Seeder {
         DB::table('cursos')->insert([
             [
                 'numero' => 1,
-                'ciclo_id' => 1,
+                'id_ciclo' => 1,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
                 'numero' => 2,
-                'ciclo_id' => 1,
+                'id_ciclo' => 1,
                 'created_at' => now(),
                 'updated_at' => now()
             ],

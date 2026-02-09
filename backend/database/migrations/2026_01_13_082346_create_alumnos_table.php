@@ -16,10 +16,11 @@ return new class extends Migration {
             $table->string('apellidos', 150);
             $table->string('telefono', 20)->nullable();
             $table->string('ciudad', 120)->nullable();
+            $table->string('matricula_id', 20);
             $table->unsignedBigInteger('tutor_id')->nullable();
-
+            $table->string('dni', 10)->unique();
             $table->foreignId('user_id')->unique()->constrained('users')->cascadeOnDelete();
-            $table->foreignId('curso_id')->constrained('cursos');
+            $table->foreignId('curso_id')->nullable()->constrained('cursos')->nullOnDelete();
             $table->foreign('tutor_id')->references('id')->on('tutores')->nullOnDelete();
 
             $table->timestamps();
