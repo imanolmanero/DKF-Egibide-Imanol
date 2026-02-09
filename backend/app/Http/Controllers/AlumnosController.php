@@ -180,11 +180,11 @@ class AlumnosController extends Controller {
     }
 
     public function getAsignaturasAlumno($alumno_id) {
-        $estancia = Estancia::where('alumno_id', $alumno_id)
+        $alumno = Alumnos::where('id', $alumno_id)
             ->with('curso.ciclo.asignaturas')
             ->firstOrFail();
 
-        $asignaturas = $estancia->curso->ciclo->asignaturas;
+        $asignaturas = $alumno->curso->ciclo->asignaturas;
 
         return response()->json($asignaturas, 200);
     }
