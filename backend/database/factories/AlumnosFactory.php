@@ -5,6 +5,7 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\Alumnos;
 use App\Models\User;
+use App\Models\Curso;
 
 class AlumnosFactory extends Factory
 {
@@ -18,6 +19,7 @@ class AlumnosFactory extends Factory
             'telefono' => fake()->optional()->numerify('#########'),
             'ciudad' => fake()->optional()->city(),
             'user_id' => User::factory(),
+            'curso_id' => Curso::factory(),
         ];
     }
 }

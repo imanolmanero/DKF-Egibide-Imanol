@@ -13,7 +13,7 @@ class CursoFactory extends Factory
     public function definition(): array
     {
         return [
-            'numero' => fake()->unique()->numberBetween(1, 2),
+            'numero' => fake()->numberBetween(1, 100),
             'ciclo_id' => Ciclos::factory(),
         ];
     }

@@ -55,10 +55,12 @@ class AdminApiTest extends TestCase
         $admin = $this->authAsAdmin();
 
         // Crear datos de prueba
+        // Nota: Alumnos::factory()->count(5)->create() crea 5 ciclos también (uno por alumno)
         Alumnos::factory()->count(5)->create();
         Empresas::factory()->count(3)->create();
         Ciclos::factory()->count(2)->create();
 
+        // Total de ciclos: 5 (from alumnos) + 2 (created explicitly) = 7
         // Crear tutores
         $userTutor = User::factory()->create(['role' => 'tutor_egibide']);
         DB::table('tutores')->insert([
@@ -91,7 +93,7 @@ class AdminApiTest extends TestCase
             ->assertJsonPath('counts.alumnos', 5)
             ->assertJsonPath('counts.empresas', 3)
             ->assertJsonPath('counts.tutores', 1)
-            ->assertJsonPath('counts.ciclos', 2);
+            ->assertJsonPath('counts.ciclos', 7);
     }
 
     public function test_inicio_admin_con_datos_vacios(): void

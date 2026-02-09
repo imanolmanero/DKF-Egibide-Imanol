@@ -42,12 +42,14 @@ class CiclosModelTest extends TestCase
 
         $ciclo = Ciclos::create([
             'nombre' => 'DAW',
+            'codigo' => 'DAW-2025',
             'familia_profesional_id' => $familia->id,
         ]);
 
         $this->assertDatabaseHas('ciclos', [
             'id' => $ciclo->id,
             'nombre' => 'DAW',
+            'codigo' => 'DAW-2025',
             'familia_profesional_id' => $familia->id,
         ]);
     }

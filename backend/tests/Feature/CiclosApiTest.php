@@ -51,6 +51,7 @@ class CiclosApiTest extends TestCase
 
         $payload = [
             'nombre' => 'DAW',
+            'codigo' => 'DAW-2025',
             'familia_profesional_id' => $familia->id,
         ];
 
@@ -63,6 +64,7 @@ class CiclosApiTest extends TestCase
 
         $this->assertDatabaseHas('ciclos', [
             'nombre' => 'DAW',
+            'codigo' => 'DAW-2025',
             'familia_profesional_id' => $familia->id,
         ]);
     }

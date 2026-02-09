@@ -4,12 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Ciclos;
 use App\Models\Curso;
+use App\Services\CicloImportService;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Validator;
 
 class CiclosController extends Controller {
     protected $importService;
+
+    public function __construct(CicloImportService $importService) {
+        $this->importService = $importService;
+    }
 
 
     
@@ -26,6 +31,7 @@ class CiclosController extends Controller {
     public function store(Request $request) {
         $validated = $request->validate([
             'nombre' => ['required'],
+            'codigo' => ['required'],
             'familia_profesional_id' => ['required']
         ]);
 

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\Estancia;
 use App\Models\Alumnos;
 use App\Models\Empresas;
+use App\Models\Curso;
 
 class EstanciaFactory extends Factory
 {
@@ -28,6 +29,8 @@ class EstanciaFactory extends Factory
             'fecha_fin' => $fechaFin,
             'horas_totales' => fake()->numberBetween(300, 500),
             'alumno_id' => Alumnos::factory(),
+            'curso_id' => Curso::factory(),
+            'empresa_id' => Empresas::factory(),
         ];
     }
 

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 use App\Models\Alumnos;
 use App\Models\User;
+use App\Models\Curso;
 
 class AlumnosModelTest extends TestCase
 {
@@ -47,6 +48,7 @@ class AlumnosModelTest extends TestCase
     public function test_se_puede_crear_un_alumno_con_campos_validos(): void
     {
         $user = User::factory()->create();
+        $curso = Curso::factory()->create();
 
         $alumno = Alumnos::create([
             'nombre' => 'Jon',
@@ -54,6 +56,7 @@ class AlumnosModelTest extends TestCase
             'telefono' => '600123123',
             'ciudad' => 'Vitoria',
             'user_id' => $user->id,
+            'curso_id' => $curso->id,
         ]);
 
         $this->assertDatabaseHas('alumnos', [
@@ -63,6 +66,7 @@ class AlumnosModelTest extends TestCase
             'telefono' => '600123123',
             'ciudad' => 'Vitoria',
             'user_id' => $user->id,
+            'curso_id' => $curso->id,
         ]);
     }
 }

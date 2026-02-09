@@ -2,15 +2,18 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Ciclos extends Model {
+    use HasFactory;
 
     protected $table = 'ciclos';
     protected $fillable = [
         'nombre',
+        'codigo',
         'familia_profesional_id'
     ];
 
