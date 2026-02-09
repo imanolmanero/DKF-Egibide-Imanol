@@ -58,9 +58,9 @@ Route::middleware('auth:sanctum')->group(
         Route::post('/notas/alumno/cuaderno/guardar', [NotasController::class, 'guardarNotasCuaderno']);
 
         // Empresas
-        Route::get('/empresa', [EmpresasController::class, 'index']);
-        Route::post('/empresa', [EmpresasController::class, 'store']);
-        Route::get('/me/empresa', [EmpresasController::class, 'miEmpresa']);
+        Route::get('/empresas', [EmpresasController::class, 'index']);
+        Route::post('/empresas', [EmpresasController::class, 'store']);
+        Route::get('/me/empresas', [EmpresasController::class, 'miEmpresa']);
         Route::post('/empresas/asignar', [EmpresasController::class, 'storeEmpresaAsignada']);
 
         // Alumnos

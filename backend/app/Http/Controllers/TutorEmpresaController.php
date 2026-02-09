@@ -108,7 +108,7 @@ class TutorEmpresaController extends Controller {
             'nombre' => $tutor->nombre,
             'apellidos' => $tutor->apellidos,
             'email' => $user->email,
-            'tipo' => $user->tipo,
+            'tipo' => $user->role,
         ]);
     }
 }

@@ -21,7 +21,7 @@ class EmpresasApiTest extends TestCase
 
     public function test_requiere_autenticacion(): void
     {
-        $this->getJson('/api/empresa')
+        $this->getJson('/api/empresas')
             ->assertStatus(401);
     }
 
@@ -31,7 +31,7 @@ class EmpresasApiTest extends TestCase
 
         Empresas::factory()->count(3)->create();
 
-        $this->getJson('/api/empresa')
+        $this->getJson('/api/empresas')
             ->assertOk()
             ->assertJsonCount(3);
     }
@@ -48,7 +48,7 @@ class EmpresasApiTest extends TestCase
             'email' => 'empresa@test.com',
         ];
 
-        $this->postJson('/api/empresa', $payload)
+        $this->postJson('/api/empresas', $payload)
             ->assertStatus(201)
             ->assertJson([
                 'success' => true,
