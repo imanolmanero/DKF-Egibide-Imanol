@@ -2,16 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class FamiliaProfesional extends Model {
-
-    use HasFactory;
-
     protected $fillable = [
         'nombre',
         'codigo_familia',
@@ -39,17 +35,5 @@ class FamiliaProfesional extends Model {
      */
     public function competenciasTransversales(): HasMany {
         return $this->hasMany(CompetenciaTransversal::class);
-    }
-
-    /**
-     * Get all tutores that owns this familia profesional
-     */
-    public function tutores(): BelongsToMany {
-        return $this->belongsToMany(
-            TutorEgibide::class,
-            'familia_tutor',
-            'familias_profesionales_id',
-            'tutor_id'
-        )->withTimestamps();
     }
 }

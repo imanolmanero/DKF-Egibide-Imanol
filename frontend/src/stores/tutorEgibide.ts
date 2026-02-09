@@ -1,4 +1,5 @@
 import type { Alumno } from "@/interfaces/Alumno";
+import type { Curso } from "@/interfaces/Curso";
 import type { Empresa } from "@/interfaces/Empresa";
 import { defineStore } from "pinia";
 import { ref } from "vue";
@@ -9,7 +10,7 @@ const baseURL = import.meta.env.VITE_API_BASE_URL;
 export const useTutorEgibideStore = defineStore("tutorEgibide", () => {
   const alumnosAsignados = ref<Alumno[]>([]);
   const empresasAsignadas = ref<Empresa[]>([]);
-
+  const misCursos = ref<Curso[]>([]);
   const loading = ref(false);
   const error = ref<string | null>(null);
 
@@ -43,13 +44,15 @@ export const useTutorEgibideStore = defineStore("tutorEgibide", () => {
             Authorization: authStore.token ? `Bearer ${authStore.token}` : "",
             Accept: "application/json",
           },
-        }
+        },
       );
 
       const data = await response.json();
-
       if (!response.ok) {
-        setMessage(data.message || "Error desconocido al cargar alumnos", "error");
+        setMessage(
+          data.message || "Error desconocido al cargar alumnos",
+          "error",
+        );
         return false;
       }
 
@@ -63,6 +66,7 @@ export const useTutorEgibideStore = defineStore("tutorEgibide", () => {
       loading.value = false;
     }
   }
+  // Traer alumnos asignados
   async function fetchEmpresasAsignadas(tutorId: string) {
     loading.value = true;
     try {
@@ -73,13 +77,15 @@ export const useTutorEgibideStore = defineStore("tutorEgibide", () => {
             Authorization: authStore.token ? `Bearer ${authStore.token}` : "",
             Accept: "application/json",
           },
-        }
+        },
       );
 
       const data = await response.json();
-
       if (!response.ok) {
-        setMessage(data.message || "Error desconocido al cargar empresas", "error");
+        setMessage(
+          data.message || "Error desconocido al cargar empresas",
+          "error",
+        );
         return false;
       }
 
@@ -88,6 +94,75 @@ export const useTutorEgibideStore = defineStore("tutorEgibide", () => {
     } catch (err) {
       console.error(err);
       setMessage("Error de conexión al obtener empresas", "error");
+      return false;
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  //Traer grados con alumnos sin tutor asignado
+  async function fetchAlumnosDeMiCursoSinTutorAsignado(tutorId: string) {
+    loading.value = true;
+    try {
+      const response = await fetch(
+        `${baseURL}/api/tutorEgibide/${tutorId}/cursos/alumnos`,
+        {
+          headers: {
+            Authorization: authStore.token ? `Bearer ${authStore.token}` : "",
+            Accept: "application/json",
+          },
+        },
+      );
+
+      const data = await response.json();
+      if (!response.ok) {
+        setMessage(
+          data.message || "Error desconocido al cargar cursos",
+          "error",
+        );
+        return false;
+      }
+
+      misCursos.value = data as Curso[];
+      return true;
+    } catch (err) {
+      console.error(err);
+      setMessage("Error de conexión al obtener empresas", "error");
+      return false;
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  // Asignar alumno al tutor actual
+  async function asignarAlumnoATutor(alumnoId: number, tutorId: number) {
+    loading.value = true;
+    try {
+      const response = await fetch(
+        `${baseURL}/api/tutorEgibide/asignarAlumno`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: authStore.token ? `Bearer ${authStore.token}` : "",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({ alumno_id: alumnoId, tutor_id: tutorId }),
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setMessage(data.message || "Error al asignar alumno", "error");
+        return false;
+      }
+
+      setMessage(`Alumno asignado correctamente`, "success");
+      return true;
+    } catch (err) {
+      console.error(err);
+      setMessage("Error de conexión al asignar alumno", "error");
       return false;
     } finally {
       loading.value = false;
@@ -107,9 +182,11 @@ export const useTutorEgibideStore = defineStore("tutorEgibide", () => {
       });
 
       const data = await response.json();
-
       if (!response.ok) {
-        setMessage(data.message || "Error desconocido, inténtalo más tarde", "error");
+        setMessage(
+          data.message || "Error desconocido, inténtalo más tarde",
+          "error",
+        );
         inicio.value = null;
         return false;
       }
@@ -126,10 +203,13 @@ export const useTutorEgibideStore = defineStore("tutorEgibide", () => {
     alumnoId: number,
     fechaInicio: string,
     fechaFin: string | null,
-    horasTotales: number
+    horasTotales: number,
   ) {
     if (!fechaInicio || !horasTotales) {
-      setMessage("Debes completar la fecha inicio y las horas totales", "error");
+      setMessage(
+        "Debes completar la fecha inicio y las horas totales",
+        "error",
+      );
       return false;
     }
 
@@ -146,7 +226,7 @@ export const useTutorEgibideStore = defineStore("tutorEgibide", () => {
         headers: {
           "Content-Type": "application/json",
           Authorization: authStore.token ? `Bearer ${authStore.token}` : "",
-	  Accept: "application/json",
+          Accept: "application/json",
         },
         body: JSON.stringify(payload),
       });
@@ -159,15 +239,17 @@ export const useTutorEgibideStore = defineStore("tutorEgibide", () => {
 
       if (!response.ok) {
         setMessage(
-          data?.message || `Error al guardar la estancia. Código: ${response.status}`,
-          "error"
+          data?.message ||
+            `Error al guardar la estancia. Código: ${response.status}`,
+          "error",
         );
         return false;
       }
 
       // Actualizar store local
       const alumnoStore = alumnosAsignados.value.find(
-        (a) => Number(a.pivot?.alumno_id) === alumnoId || Number(a.id) === alumnoId
+        (a) =>
+          Number(a.pivot?.alumno_id) === alumnoId || Number(a.id) === alumnoId,
       );
 
       if (alumnoStore) {
@@ -189,20 +271,26 @@ export const useTutorEgibideStore = defineStore("tutorEgibide", () => {
   }
 
   async function updateAlumnoEmpresa(alumnoId: number, empresaId: number) {
-    const alumnoToUpdate = alumnosAsignados.value.find(a => a.id === alumnoId);
+    const alumnoToUpdate = alumnosAsignados.value.find(
+      (a) => a.id === alumnoId,
+    );
     if (!alumnoToUpdate) return;
 
     // Aseguramos que pivot existe
-    if (!alumnoToUpdate.pivot) {
-      alumnoToUpdate.pivot = { alumno_id: alumnoId, empresa_id: empresaId } as any;
+    if (!alumnoToUpdate.estancias) {
+      alumnoToUpdate.estancias = {
+        alumno_id: alumnoId,
+        empresa_id: empresaId,
+      } as any;
     } else {
-      alumnoToUpdate.pivot.empresa_id = empresaId;
+      alumnoToUpdate.estancias.empresa_id = empresaId;
     }
   }
 
   return {
     alumnosAsignados,
     empresasAsignadas,
+    misCursos,
     loading,
     error,
     message,
@@ -215,5 +303,7 @@ export const useTutorEgibideStore = defineStore("tutorEgibide", () => {
     guardarHorarioAlumno,
     updateAlumnoEmpresa,
     setMessage,
+    fetchAlumnosDeMiCursoSinTutorAsignado,
+    asignarAlumnoATutor,
   };
 });

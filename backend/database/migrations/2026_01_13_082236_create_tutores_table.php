@@ -13,7 +13,6 @@ return new class extends Migration {
             $table->id();
             $table->string('nombre', 100);
             $table->string('apellidos', 150);
-            $table->string('alias', 20)->unique();
             $table->string('telefono', 20)->nullable();
             $table->string('ciudad', 120)->nullable();
             $table->foreignId('user_id')->unique()->constrained('users')->cascadeOnDelete();

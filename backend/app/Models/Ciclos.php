@@ -2,19 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Ciclos extends Model {
-    use HasFactory;
 
     protected $table = 'ciclos';
     protected $fillable = [
         'nombre',
-        'familia_profesional_id',
-        'codigo'
+        'familia_profesional_id'
     ];
 
     /**
@@ -43,5 +40,13 @@ class Ciclos extends Model {
      */
     public function competenciasTec(): HasMany {
         return $this->hasMany(CompetenciaTec::class);
+    }
+
+    public function tutores(){
+        return $this->belongsToMany(TutorEgibide::class,'ciclo_tutor','curso_id','tutor_id');
+    }
+
+    public function alumnos(){
+        return $this->hasMany(Alumnos::class,'curso_id','id');
     }
 }

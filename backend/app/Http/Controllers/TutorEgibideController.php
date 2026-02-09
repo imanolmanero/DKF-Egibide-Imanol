@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Alumnos;
 use App\Models\Ciclos;
+use App\Models\Curso;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use App\Models\TutorEgibide;
@@ -10,43 +12,48 @@ use App\Models\Estancia;
 use App\Models\Empresas;
 
 
-class TutorEgibideController extends Controller {
+class TutorEgibideController extends Controller
+{
 
-    public function getAlumnosByCurrentTutor(Request $request) {
+    public function getAlumnosByCurrentTutor(Request $request)
+    {
         $userId = $request->user()->id;
 
         $tutor = TutorEgibide::where('user_id', $userId)->firstOrFail();
 
-        $alumnos = $tutor->alumnosConEstancia()->get();
+        $alumnos = $tutor->alumnos()->with('estancias.empresa')->get();
 
         return response()->json($alumnos);
     }
 
-    public function conseguirEmpresasporTutor(Request $request) {
+    public function conseguirEmpresasporTutor(Request $request)
+    {
         $userId = $request->user()->id;
 
         $tutor = TutorEgibide::where('user_id', $userId)->firstOrFail();
 
-        // Obtener empresas únicas a través de las estancias
-        $empresas = Empresas::whereHas('estancias', function ($query) use ($tutor) {
+        $empresas = Empresas::whereHas('estancias.alumno', function ($query) use ($tutor) {
             $query->where('tutor_id', $tutor->id);
         })->get();
 
         return response()->json($empresas);
     }
 
-    public function getDetalleEmpresa(Request $request, $empresaId) {
+
+    public function getDetalleEmpresa(Request $request, $empresaId)
+    {
         $userId = $request->user()->id;
         $tutor = TutorEgibide::where('user_id', $userId)->firstOrFail();
 
-        // Obtener empresa con instructor
-        $empresa = Empresas::with(['instructores' => function ($query) use ($tutor) {
-            $query->whereHas('estancias', function ($q) use ($tutor) {
-                $q->where('tutor_id', $tutor->id);
-            });
-        }])
+        $empresa = Empresas::with([
+            'instructores' => function ($query) use ($tutor) {
+                $query->whereHas('estancias.alumno', function ($q) use ($tutor) {
+                    $q->where('tutor_id', $tutor->id);
+                });
+            }
+        ])
             ->where('id', $empresaId)
-            ->whereHas('estancias', function ($query) use ($tutor) {
+            ->whereHas('estancias.alumno', function ($query) use ($tutor) {
                 $query->where('tutor_id', $tutor->id);
             })
             ->firstOrFail();
@@ -54,9 +61,12 @@ class TutorEgibideController extends Controller {
         return response()->json($empresa);
     }
 
-    public function getTutoresByCiclo($ciclo_id) {
+
+    public function getTutoresByCiclo($ciclo_id)
+    {
         $ciclo = Ciclos::find($ciclo_id);
-        if (!$ciclo) return response()->json([], 404);
+        if (!$ciclo)
+            return response()->json([], 404);
 
         $familia = $ciclo->familiaProfesional;
         $tutores = $familia?->tutores ?? collect();
@@ -64,57 +74,75 @@ class TutorEgibideController extends Controller {
         return response()->json($tutores, 200);
     }
 
-    public function inicioTutor(Request $request) {
+    public function inicioTutor(Request $request)
+    {
         $user = $request->user();
 
         $tutor = $user->tutorEgibide;
 
         if (!$tutor) {
             return response()->json([
-                'message' => 'El usuario no tiene tutor egibide asociado.'
+                'message' => 'El usuario no tiene tutor egibide asociado.',
+                'user' => $user
             ], 404);
         }
 
         $email = $user->email;
+        $tutor['email'] = $email;
         $hoy = now();
 
-        $alumnosAsignados = $tutor->estancias()
-            ->whereDate('fecha_inicio', '<=', $hoy)
-            ->where(function ($q) use ($hoy) {
-                $q->whereNull('fecha_fin')
-                    ->orWhereDate('fecha_fin', '>=', $hoy);
+        $alumnosAsignados = $tutor->alumnos()->count();
+        $alumnosConEstancia = $tutor->alumnos()
+            ->whereHas('estancias', function ($q) use ($hoy) {
+                $q->whereDate('fecha_inicio', '<=', $hoy)
+                    ->where(function ($q2) use ($hoy) {
+                        $q2->whereNull('fecha_fin')
+                            ->orWhereDate('fecha_fin', '>=', $hoy);
+                    })
+                    ->whereNotNull('empresa_id');
             })
-            ->whereNotNull('alumno_id')
-            ->distinct()
-            ->count('alumno_id');
+            ->count();
 
-        $empresasAsignadas = $tutor->estancias()
-            ->whereDate('fecha_inicio', '<=', $hoy)
-            ->where(function ($q) use ($hoy) {
-                $q->whereNull('fecha_fin')
-                    ->orWhereDate('fecha_fin', '>=', $hoy);
-            })
-            ->whereNotNull('empresa_id')
-            ->distinct()
-            ->count('empresa_id');
 
         return response()->json([
-            'tutor' => [
-                'nombre'    => $tutor->nombre,
-                'apellidos' => $tutor->apellidos,
-                'telefono'  => $tutor->telefono,
-                'ciudad'    => $tutor->ciudad,
-                'email'     => $email,
-            ],
+            'tutor' => $tutor,
             'counts' => [
-                'alumnos_asignados'  => $alumnosAsignados,
-                'empresas_asignadas' => $empresasAsignadas,
+                'alumnos_asignados' => $alumnosAsignados,
+                'empresas_asignadas' => $alumnosConEstancia,
             ],
         ]);
     }
 
+    public function asignarAlumno(Request $request)
+    {
+        $request->validate([
+            'alumno_id' => 'required|exists:alumnos,id',
+            'tutor_id' => 'required|exists:users,id', // suponiendo que tutores son usuarios
+        ]);
 
-    public function me(Request $request) {
+        $alumno = Alumnos::find($request->alumno_id);
+        $tutorId = $request->tutor_id;
+
+        try {
+            // Asignación simple, suponiendo campo tutor_id en tabla alumnos
+            $alumno->tutor_id = $tutorId;
+            $alumno->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Alumno asignado correctamente'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al asignar alumno',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function me(Request $request)
+    {
         $user = $request->user();
 
         $tutor = TutorEgibide::where('user_id', $user->id)->first();
@@ -131,28 +159,27 @@ class TutorEgibideController extends Controller {
     /**
      * Guardar o actualizar horario y calendario de una estancia.
      */
-    public function horasperiodo(Request $request) {
+    public function horasperiodo(Request $request)
+    {
         // Validar los datos
         $validated = $request->validate([
-            'alumno_id'     => 'required|exists:alumnos,id',
-            'fecha_inicio'  => 'required|date',
-            'fecha_fin'     => 'nullable|date|after_or_equal:fecha_inicio',
+            'alumno_id' => 'required|exists:alumnos,id',
+            'fecha_inicio' => 'required|date',
+            'fecha_fin' => 'nullable|date|after_or_equal:fecha_inicio',
             'horas_totales' => 'required|integer|min:1',
         ]);
 
         try {
             // Obtener tutor logueado
             $user = $request->user();
-            $tutor = TutorEgibide::where('user_id', $user->id)->firstOrFail();
 
             // Crear o actualizar estancia por alumno_id
             $estancia = Estancia::updateOrCreate(
                 ['alumno_id' => $validated['alumno_id']], // Condición para actualizar
                 [
-                    'fecha_inicio'  => $validated['fecha_inicio'],
-                    'fecha_fin'     => $validated['fecha_fin'] ?? null,
+                    'fecha_inicio' => $validated['fecha_inicio'],
+                    'fecha_fin' => $validated['fecha_fin'] ?? null,
                     'horas_totales' => $validated['horas_totales'],
-                    'tutor_id'      => $tutor->id,
                 ]
             );
 
@@ -167,5 +194,22 @@ class TutorEgibideController extends Controller {
                 'message' => 'Error al guardar la estancia: ' . $e->getMessage(),
             ], 500);
         }
+    }
+
+    public function getMisCursosConAlumnosSinTutor(Request $req, $tutorId)
+    {
+        $tutor = TutorEgibide::find($tutorId);
+
+        // Obtenemos los cursos del tutor con su ciclo y alumnos sin tutor asignado
+        $cursos = $tutor->cursos()
+            ->with([
+                'ciclo', // cargamos el ciclo de cada curso
+                'alumnos' => function ($query) {
+                    $query->whereNull('tutor_id'); // solo alumnos sin tutor
+                }
+            ])
+            ->get();
+
+        return response()->json($cursos);
     }
 }

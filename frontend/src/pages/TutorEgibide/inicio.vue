@@ -6,28 +6,36 @@ const tutorStore = useTutorEgibideStore();
 
 onMounted(() => {
   tutorStore.fetchInicioTutor();
+  
 });
+
 </script>
 
 <template>
   <div>
-    <h2 class="display-5 fw-bold mb-2">
-      Hola, {{ tutorStore.inicio?.tutor?.nombre ?? "" }}
-    </h2>
+    <!-- LOADING GLOBAL -->
+    <div v-if="tutorStore.loadingInicio" class="text-center py-5">
+      <div class="spinner-border text-secondary" role="status"></div>
+      <p class="mt-3">Cargando información...</p>
+    </div>
 
-    <div class="subrayado mb-4"></div>
+    <!-- CONTENIDO SOLO CUANDO YA ESTÁ TODO -->
+    <div v-else>
+      <h2 class="display-5 fw-bold mb-2">
+        Hola, {{ tutorStore.inicio?.tutor?.nombre }}
+      </h2>
 
-    <p class="descripcion mb-4">
-      Consulta tus datos de tutor, y el número de alumnos y empresas que tienes asignadas.
-    </p>
+      <div class="subrayado mb-4"></div>
 
-    <p v-if="tutorStore.loadingInicio">Cargando información...</p>
+      <p class="descripcion mb-4">
+        Consulta tus datos de tutor, y el número de alumnos y empresas que tienes asignadas.
+      </p>
 
-    <p v-else-if="!tutorStore.inicio?.tutor">
-      No tienes tutor egibide asociado.
-    </p>
+      <p v-if="!tutorStore.inicio?.tutor">
+        No tienes tutor egibide asociado.
+      </p>
 
-    <div v-else class="row g-3">
+      <div v-else class="row g-3">
 
       <!-- NOMBRE -->
       <div class="col-12 col-md-6">
@@ -139,8 +147,10 @@ onMounted(() => {
       </div>
 
     </div>
+    </div>
   </div>
 </template>
+
 
 <style scoped>
 .subrayado {

@@ -20,7 +20,6 @@ class Estancia extends Model {
         'tutor_id',
         'instructor_id',
         'empresa_id',
-        'curso_id'
     ];
 
     protected $casts = [

@@ -14,16 +14,7 @@ const tutorEgibideStore = useTutorEgibideStore();
 const tutorEmpresaStore = useTutorEmpresaStore();
 const empresaStore = useEmpresasStore();
 
-// Computed alumno
-const alumno = computed(() => {
-  return store.value.alumnosAsignados.find(a => a.id === alumnoId) || null;
-});
 
-// Computed empresa: busca la empresa en el store de empresas
-const empresa = computed(() => {
-  if (!alumno.value?.pivot?.empresa_id) return null;
-  return empresaStore.empresas.find(e => e.id === alumno.value!.pivot!.empresa_id) || null;
-});
 
 const isLoading = ref(true);
 const error = ref<string | null>(null);
@@ -38,24 +29,19 @@ const store = computed(() =>
   tipoTutor === "egibide" ? tutorEgibideStore : tutorEmpresaStore,
 );
 
+let alumno = ref<Alumno | null>(null);
+
 onMounted(async () => {
   try {
     isLoading.value = true;
 
-    if (
-      !store.value.alumnosAsignados ||
-      store.value.alumnosAsignados.length === 0
-    ) {
       await store.value.fetchAlumnosAsignados(tutorId);
-    }
-
-    if (!empresaStore.empresas || empresaStore.empresas.length === 0) {
-      await empresaStore.fetchEmpresas();
-    }
-
+    
+    alumno.value = store.value.alumnosAsignados.find(a => a.id === alumnoId) || null;
     if (!alumno.value) {
       error.value = "Alumno no encontrado";
     }
+
   } catch (err) {
     console.error(err);
     error.value = "Error al cargar los datos del alumno";
@@ -63,6 +49,7 @@ onMounted(async () => {
     isLoading.value = false;
   }
 });
+
 
 const irACompetencias = () => {
   router.push({
@@ -141,11 +128,7 @@ const formatDate = (dateString: string) => {
     </div>
 
     <!-- Error al cargar -->
-    <div
-      v-else-if="error"
-      class="alert alert-danger d-flex align-items-center"
-      role="alert"
-    >
+    <div v-else-if="error" class="alert alert-danger d-flex align-items-center" role="alert">
       <i class="bi bi-exclamation-triangle-fill me-2"></i>
       <div>
         {{ error }}
@@ -197,68 +180,67 @@ const formatDate = (dateString: string) => {
 
           <!-- Información adicional -->
           <div class="row g-3 mt-2">
-            <div class="col-md-6" v-if="alumno.telefono">
-              <div class="info-item">
-                <i class="bi bi-telephone-fill text-primary me-2"></i>
-                <span class="text-muted">Teléfono:</span>
-                <strong class="ms-2">{{ alumno.telefono }}</strong>
-              </div>
-            </div>
-            <div class="col-md-6" v-if="alumno.ciudad">
-              <div class="info-item">
-                <i class="bi bi-geo-alt-fill text-primary me-2"></i>
-                <span class="text-muted">Ciudad:</span>
-                <strong class="ms-2">{{ alumno.ciudad }}</strong>
-              </div>
-            </div>
-            <div class="col-md-6" v-if="alumno.pivot">
-              <div class="info-item">
-                <i class="bi bi-geo-alt-fill text-primary me-2"></i>
-                <span class="text-muted">Empresa:</span>
-                <strong class="ms-2">
-                  {{ empresa?.nombre ?? 'Sin asignar' }}
-                </strong>
-              </div>
-            </div>
-            <div class="col-md-6" v-if="alumno.pivot?.puesto">
-              <div class="info-item">
-                <i class="bi bi-briefcase-fill text-primary me-2"></i>
-                <span class="text-muted">Puesto:</span>
-                <strong class="ms-2">{{ alumno.pivot.puesto }}</strong>
-              </div>
-            </div>
-            <div class="col-md-6" v-if="alumno.pivot">
-              <div class="info-item">
-                <i class="bi bi-clock-fill text-primary me-2"></i>
-                <span class="text-muted">Horas totales:</span>
-                <strong class="ms-2">
-                  {{ alumno.pivot.horas_totales ? alumno.pivot.horas_totales + 'h' : 'Sin asignar' }}               
-                </strong>
-              </div>
-            </div>
-            <div class="col-md-6" v-if="alumno.pivot?.fecha_inicio || alumno.pivot?.fecha_fin">
-              <div class="info-item">
-                <i class="bi bi-calendar-range-fill text-primary me-2"></i>
-                <span class="text-muted">Periodo:</span>
-                <strong class="ms-2">
-                  {{ alumno.pivot?.fecha_inicio ? formatDate(alumno.pivot.fecha_inicio) : 'Por definir' }} -
-                  {{ alumno.pivot?.fecha_fin ? formatDate(alumno.pivot.fecha_fin) : 'Por definir' }}
-                </strong>
-              </div>
-            </div>
-          </div>
+  <div class="col-md-6">
+    <div class="info-item">
+      <i class="bi bi-telephone-fill text-primary me-2"></i>
+      <span class="text-muted">Teléfono:</span>
+      <strong class="ms-2">{{ alumno.telefono }}</strong>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="info-item">
+      <i class="bi bi-geo-alt-fill text-primary me-2"></i>
+      <span class="text-muted">Ciudad:</span>
+      <strong class="ms-2">{{ alumno.ciudad }}</strong>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="info-item">
+      <i class="bi bi-geo-alt-fill text-primary me-2"></i>
+      <span class="text-muted">Empresa:</span>
+      <strong class="ms-2">
+        {{ alumno.estancias?.[0]?.empresa?.nombre ?? 'Sin asignar' }}
+      </strong>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="info-item">
+      <i class="bi bi-briefcase-fill text-primary me-2"></i>
+      <span class="text-muted">Puesto:</span>
+      <strong class="ms-2">{{ alumno.estancias?.[0]?.puesto ?? 'Sin asignar' }}</strong>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="info-item">
+      <i class="bi bi-clock-fill text-primary me-2"></i>
+      <span class="text-muted">Horas totales:</span>
+      <strong class="ms-2">
+        {{ alumno.estancias?.[0]?.horas_totales ? alumno.estancias?.[0]?.horas_totales + 'h' : 'Sin asignar' }}
+      </strong>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="info-item">
+      <i class="bi bi-calendar-range-fill text-primary me-2"></i>
+      <span class="text-muted">Periodo:</span>
+      <strong class="ms-2" v-if="alumno.estancias?.[0]?.fecha_inicio && alumno.estancias?.[0]?.fecha_fin">
+        {{  formatDate(alumno.estancias?.[0]?.fecha_inicio) }} -
+        {{ formatDate(alumno.estancias?.[0]?.fecha_fin) }}
+      </strong>
+      <strong class="ms-2" v-else>
+        Por definir
+      </strong>
+    </div>
+  </div>
+</div>
+
         </div>
       </div>
 
       <!-- Acciones principales -->
       <div class="row g-3">
         <div class="col-md-6" v-if="tipoTutor === 'empresa'">
-          <div
-            class="card h-100 action-card"
-            @click="irACompetencias"
-            role="button"
-            tabindex="0"
-          >
+          <div class="card h-100 action-card" @click="irACompetencias" role="button" tabindex="0">
             <div class="card-body text-center p-4">
               <div class="icon-wrapper mb-3">
                 <i class="bi bi-list-check display-4 text-primary"></i>
@@ -275,12 +257,7 @@ const formatDate = (dateString: string) => {
         </div>
 
         <div class="col-md" v-if="tipoTutor === 'empresa'">
-          <div
-            class="card h-100 action-card"
-            @click="irACalificacion"
-            role="button"
-            tabindex="0"
-          >
+          <div class="card h-100 action-card" @click="irACalificacion" role="button" tabindex="0">
             <div class="card-body text-center p-4">
               <div class="icon-wrapper mb-3">
                 <i class="bi bi-pencil-square display-4 text-success"></i>
@@ -298,12 +275,7 @@ const formatDate = (dateString: string) => {
 
         <!-- Tutor egibide -->
         <div class="col-md" v-if="tipoTutor === 'egibide'">
-          <div
-            class="card h-100 action-card"
-            @click="irAsignarEmpresa"
-            role="button"
-            tabindex="0"
-          >
+          <div class="card h-100 action-card" @click="irAsignarEmpresa" role="button" tabindex="0">
             <div class="card-body text-center p-4">
               <div class="icon-wrapper mb-3">
                 <i class="bi bi-building-add display-4 text-success"></i>
@@ -317,12 +289,7 @@ const formatDate = (dateString: string) => {
         </div>
         <!-- Boton horario y calendario -->
         <div class="col-md" v-if="tipoTutor === 'egibide'">
-          <div
-            class="card h-100 action-card"
-            @click="irAsignarHorasPeriodo"
-            role="button"
-            tabindex="0"
-          >
+          <div class="card h-100 action-card" @click="irAsignarHorasPeriodo" role="button" tabindex="0">
             <div class="card-body text-center p-4">
               <div class="icon-wrapper mb-3">
                 <i class="bi bi-calendar-plus display-4 text-success"></i>
@@ -336,12 +303,7 @@ const formatDate = (dateString: string) => {
         </div>
         <!-- Boton seguimiento -->
         <div class="col-md" v-if="tipoTutor === 'egibide'">
-          <div
-            class="card h-100 action-card"
-            @click="irSeguimiento"
-            role="button"
-            tabindex="0"
-          >
+          <div class="card h-100 action-card" @click="irSeguimiento" role="button" tabindex="0">
             <div class="card-body text-center p-4">
               <div class="icon-wrapper mb-3">
                 <i class="bi bi-chat-left-text display-4 text-primary"></i>
@@ -355,12 +317,7 @@ const formatDate = (dateString: string) => {
         </div>
         <!-- Boton competencias -->
         <div class="col-md" v-if="tipoTutor === 'egibide'">
-          <div
-            class="card h-100 action-card"
-            @click="irCompetencias"
-            role="button"
-            tabindex="0"
-          >
+          <div class="card h-100 action-card" @click="irCompetencias" role="button" tabindex="0">
             <div class="card-body text-center p-4">
               <div class="icon-wrapper mb-3">
                 <i class="bi bi-list-check display-4 text-primary"></i>
@@ -374,12 +331,7 @@ const formatDate = (dateString: string) => {
         </div>
         <!-- Boton Calificaciones -->
         <div class="col-md" v-if="tipoTutor === 'egibide'">
-          <div
-            class="card h-100 action-card"
-            @click="irCalificacionesEgibide"
-            role="button"
-            tabindex="0"
-          >
+          <div class="card h-100 action-card" @click="irCalificacionesEgibide" role="button" tabindex="0">
             <div class="card-body text-center p-4">
               <div class="icon-wrapper mb-3">
                 <i class="bi bi-mortarboard display-4 text-primary"></i>
@@ -401,11 +353,9 @@ const formatDate = (dateString: string) => {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: linear-gradient(
-    135deg,
-    #81045f 0%,
-    #4a90e2 100%
-  );  
+  background: linear-gradient(135deg,
+      #81045f 0%,
+      #4a90e2 100%);
   display: flex;
   align-items: center;
   justify-content: center;

@@ -6,20 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\Estancia;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Alumnos extends Model {
-
-    use HasFactory;
-
     protected $fillable = [
         'nombre',
         'apellidos',
         'telefono',
         'ciudad',
         'user_id',
-        'dni',
-        'matricula_id'
+        'curso_id',
+        'tutor_id'
     ];
 
     /**
@@ -41,5 +37,12 @@ class Alumnos extends Model {
      */
     public function notasAsignatura(): HasMany {
         return $this->hasMany(NotaAsignatura::class);
+    }
+
+    public function curso(): BelongsTo{
+        return $this->belongsTo(Curso::class,'curso_id','id');
+    }
+    public function tutor(): BelongsTo{
+        return $this->belongsTo(TutorEgibide::class,'tutor_id','id');
     }
 }

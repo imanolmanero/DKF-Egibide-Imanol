@@ -7,19 +7,23 @@ use Illuminate\Database\Seeder;
 
 use Illuminate\Support\Facades\DB;
 
-class TutorSeeder extends Seeder {
-    public function run(): void {
+class TutorSeeder extends Seeder
+{
+    public function run(): void
+    {
+        $userTutor = DB::table('users')
+            ->where('role', 'tutor_egibide')
+            ->first()
+            ->id;
+
         DB::table('tutores')->insert([
-            [
-                'nombre' => 'Danel',
-                'apellidos' => 'Rivas',
-                'telefono' => '600333444',
-                'ciudad' => 'Vitoria-Gasteiz',
-                'alias' => 'U0000',
-                'user_id' => 3,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+            'nombre' => 'Danel',
+            'apellidos' => 'Rivas',
+            'telefono' => '600333444',
+            'ciudad' => 'Vitoria-Gasteiz',
+            'user_id' => $userTutor,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
     }
 }

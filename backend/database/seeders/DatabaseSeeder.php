@@ -23,10 +23,10 @@ class DatabaseSeeder extends Seeder {
             EmpresaSeeder::class,
 
             UserSeeder::class,
-            AlumnoSeeder::class,
             TutorSeeder::class,
-            FamiliaTutorSeeder::class,
+            CursoTutorSeeder::class,
             InstructorSeeder::class,
+            AlumnoSeeder::class,
 
             AsignaturaSeeder::class,
             ResultadosAprendizajeSeeder::class,
