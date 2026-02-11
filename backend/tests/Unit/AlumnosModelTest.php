@@ -48,25 +48,16 @@ class AlumnosModelTest extends TestCase
     public function test_se_puede_crear_un_alumno_con_campos_validos(): void
     {
         $user = User::factory()->create();
-        $curso = Curso::factory()->create();
 
-        $alumno = Alumnos::create([
-            'nombre' => 'Jon',
-            'apellidos' => 'Doe Example',
-            'telefono' => '600123123',
-            'ciudad' => 'Vitoria',
+        $alumno = Alumnos::factory()->create([
             'user_id' => $user->id,
-            'curso_id' => $curso->id,
         ]);
 
         $this->assertDatabaseHas('alumnos', [
             'id' => $alumno->id,
-            'nombre' => 'Jon',
-            'apellidos' => 'Doe Example',
-            'telefono' => '600123123',
-            'ciudad' => 'Vitoria',
+            'nombre' => $alumno->nombre,
+            'apellidos' => $alumno->apellidos,
             'user_id' => $user->id,
-            'curso_id' => $curso->id,
         ]);
     }
 }

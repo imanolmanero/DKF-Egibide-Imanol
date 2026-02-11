@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Models\Alumnos;
 use App\Models\Ciclos;
 use App\Models\Seguimiento;
+use App\Models\Empresas;
 
 class SeguimientosApiTest extends TestCase
 {
@@ -22,25 +23,19 @@ class SeguimientosApiTest extends TestCase
         $user = User::factory()->create();
         Sanctum::actingAs($user);
 
-        // ciclo + curso
-        $ciclo = Ciclos::factory()->create();
+        // empresa
+        $empresa = Empresas::factory()->create();
 
-        $cursoId = DB::table('cursos')->insertGetId([
-            'numero' => 1,
-            'ciclo_id' => $ciclo->id,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // instructor
+        $userInstructor = User::factory()->create(['role' => 'instructor']);
 
-        // tutor
-        $userTutor = User::factory()->create(['role' => 'tutor_egibide']);
-
-        $tutorId = DB::table('tutores')->insertGetId([
-            'nombre' => 'Tutor',
+        $instructorId = DB::table('instructores')->insertGetId([
+            'nombre' => 'Instructor',
             'apellidos' => 'Pruebas',
             'telefono' => '600000000',
             'ciudad' => 'Vitoria',
-            'user_id' => $userTutor->id,
+            'empresa_id' => $empresa->id,
+            'user_id' => $userInstructor->id,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -55,8 +50,8 @@ class SeguimientosApiTest extends TestCase
         // estancia (campos not null)
         $estanciaId = DB::table('estancias')->insertGetId([
             'alumno_id' => $alumno->id,
-            'curso_id' => $cursoId,
-            'tutor_id' => $tutorId,
+            'instructor_id' => $instructorId,
+            'empresa_id' => $empresa->id,
             'puesto' => 'Sin asignar',
             'fecha_inicio' => now()->toDateString(),
             'horas_totales' => 0,

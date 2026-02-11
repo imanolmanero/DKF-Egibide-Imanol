@@ -23,6 +23,7 @@ class TutorEgibideApiTest extends TestCase
         $tutor = TutorEgibide::create([
             'nombre' => 'Juan',
             'apellidos' => 'Pérez García',
+            'alias' => 'juan_perez',
             'telefono' => '600123456',
             'ciudad' => 'Vitoria',
             'user_id' => $user->id,

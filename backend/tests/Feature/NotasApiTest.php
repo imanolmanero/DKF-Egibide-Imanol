@@ -18,6 +18,7 @@ use App\Models\NotaCompetenciaTransversal;
 use App\Models\NotaCuaderno;
 use App\Models\CompetenciaTec;
 use App\Models\CompetenciaTransversal;
+use App\Models\Empresas;
 
 class NotasApiTest extends TestCase
 {
@@ -32,23 +33,18 @@ class NotasApiTest extends TestCase
 
     private function crearEstructuraBasica(): array
     {
+        $empresa = Empresas::factory()->create();
         $familia = FamiliaProfesional::factory()->create();
         $ciclo = Ciclos::factory()->create(['familia_profesional_id' => $familia->id]);
 
-        $cursoId = DB::table('cursos')->insertGetId([
-            'numero' => 1,
-            'ciclo_id' => $ciclo->id,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        $userTutor = User::factory()->create(['role' => 'tutor_egibide']);
-        $tutorId = DB::table('tutores')->insertGetId([
-            'nombre' => 'Tutor',
+        $userInstructor = User::factory()->create(['role' => 'instructor']);
+        $instructorId = DB::table('instructores')->insertGetId([
+            'nombre' => 'Instructor',
             'apellidos' => 'Test',
             'telefono' => '600000000',
             'ciudad' => 'Vitoria',
-            'user_id' => $userTutor->id,
+            'empresa_id' => $empresa->id,
+            'user_id' => $userInstructor->id,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -58,14 +54,14 @@ class NotasApiTest extends TestCase
 
         $estancia = Estancia::create([
             'alumno_id' => $alumno->id,
-            'curso_id' => $cursoId,
-            'tutor_id' => $tutorId,
+            'instructor_id' => $instructorId,
+            'empresa_id' => $empresa->id,
             'puesto' => 'Desarrollador',
             'fecha_inicio' => now(),
             'horas_totales' => 400,
         ]);
 
-        return compact('familia', 'ciclo', 'cursoId', 'tutorId', 'alumno', 'estancia');
+        return compact('familia', 'ciclo', 'instructorId', 'empresa', 'alumno', 'estancia');
     }
 
     public function test_requiere_autenticacion(): void

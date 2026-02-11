@@ -40,16 +40,13 @@ class CiclosModelTest extends TestCase
     {
         $familia = FamiliaProfesional::factory()->create();
 
-        $ciclo = Ciclos::create([
-            'nombre' => 'DAW',
-            'codigo' => 'DAW-2025',
+        $ciclo = Ciclos::factory()->create([
             'familia_profesional_id' => $familia->id,
         ]);
 
         $this->assertDatabaseHas('ciclos', [
             'id' => $ciclo->id,
-            'nombre' => 'DAW',
-            'codigo' => 'DAW-2025',
+            'nombre' => $ciclo->nombre,
             'familia_profesional_id' => $familia->id,
         ]);
     }

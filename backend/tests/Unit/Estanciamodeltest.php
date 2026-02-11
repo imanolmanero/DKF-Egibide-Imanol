@@ -22,23 +22,16 @@ class EstanciaModelTest extends TestCase
 
     private function crearEstructuraBasica(): array
     {
-        $familia = FamiliaProfesional::factory()->create();
-        $ciclo = Ciclos::factory()->create(['familia_profesional_id' => $familia->id]);
-
-        $cursoId = DB::table('cursos')->insertGetId([
-            'numero' => 1,
-            'ciclo_id' => $ciclo->id,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        $userTutor = User::factory()->create(['role' => 'tutor_egibide']);
-        $tutorId = DB::table('tutores')->insertGetId([
-            'nombre' => 'Tutor',
+        $empresa = Empresas::factory()->create();
+        
+        $userInstructor = User::factory()->create(['role' => 'instructor']);
+        $instructorId = DB::table('instructores')->insertGetId([
+            'nombre' => 'Instructor',
             'apellidos' => 'Test',
             'telefono' => '600000000',
             'ciudad' => 'Vitoria',
-            'user_id' => $userTutor->id,
+            'empresa_id' => $empresa->id,
+            'user_id' => $userInstructor->id,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -46,7 +39,7 @@ class EstanciaModelTest extends TestCase
         $userAlumno = User::factory()->create(['role' => 'alumno']);
         $alumno = Alumnos::factory()->create(['user_id' => $userAlumno->id]);
 
-        return compact('cursoId', 'tutorId', 'alumno');
+        return compact('instructorId', 'empresa', 'alumno');
     }
 
     public function test_una_estancia_pertenece_a_un_alumno(): void
@@ -55,8 +48,8 @@ class EstanciaModelTest extends TestCase
 
         $estancia = Estancia::create([
             'alumno_id' => $datos['alumno']->id,
-            'curso_id' => $datos['cursoId'],
-            'tutor_id' => $datos['tutorId'],
+            'instructor_id' => $datos['instructorId'],
+            'empresa_id' => $datos['empresa']->id,
             'puesto' => 'Desarrollador',
             'fecha_inicio' => now(),
             'horas_totales' => 400,
@@ -129,13 +122,11 @@ class EstanciaModelTest extends TestCase
     public function test_se_puede_crear_una_estancia(): void
     {
         $datos = $this->crearEstructuraBasica();
-        $empresa = Empresas::factory()->create();
 
         $estancia = Estancia::create([
             'alumno_id' => $datos['alumno']->id,
-            'curso_id' => $datos['cursoId'],
-            'tutor_id' => $datos['tutorId'],
-            'empresa_id' => $empresa->id,
+            'instructor_id' => $datos['instructorId'],
+            'empresa_id' => $datos['empresa']->id,
             'puesto' => 'Desarrollador Full Stack',
             'fecha_inicio' => now(),
             'fecha_fin' => now()->addMonths(3),
@@ -156,8 +147,8 @@ class EstanciaModelTest extends TestCase
 
         $estancia = Estancia::create([
             'alumno_id' => $datos['alumno']->id,
-            'curso_id' => $datos['cursoId'],
-            'tutor_id' => $datos['tutorId'],
+            'instructor_id' => $datos['instructorId'],
+            'empresa_id' => $datos['empresa']->id,
             'puesto' => 'Desarrollador',
             'fecha_inicio' => now(),
             'horas_totales' => 400,
@@ -172,8 +163,8 @@ class EstanciaModelTest extends TestCase
 
         $estancia = Estancia::create([
             'alumno_id' => $datos['alumno']->id,
-            'curso_id' => $datos['cursoId'],
-            'tutor_id' => $datos['tutorId'],
+            'instructor_id' => $datos['instructorId'],
+            'empresa_id' => $datos['empresa']->id,
             'puesto' => 'Desarrollador',
             'fecha_inicio' => '2025-01-15',
             'fecha_fin' => '2025-04-15',
