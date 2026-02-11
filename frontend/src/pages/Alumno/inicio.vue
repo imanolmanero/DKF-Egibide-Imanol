@@ -47,8 +47,8 @@ function formatDate(iso) {
             <div>
               <div class="text-muted small">Tutor (centro)</div>
               <div class="fw-bold">
-                {{ alumnosStore.inicio.estancia.tutor
-                  ? alumnosStore.inicio.estancia.tutor.nombre + " " + alumnosStore.inicio.estancia.tutor.apellidos
+                {{ alumnosStore.inicio.tutor
+                  ? alumnosStore.inicio.tutor.nombre + " " + alumnosStore.inicio.tutor.apellidos
                   : "—" }}
               </div>
             </div>
@@ -65,7 +65,7 @@ function formatDate(iso) {
             <div>
               <div class="text-muted small">Teléfono tutor</div>
               <div class="fw-bold">
-                {{ alumnosStore.inicio.estancia.tutor?.telefono ?? "—" }}
+                {{ alumnosStore.inicio.tutor?.telefono ?? "—" }}
               </div>
             </div>
           </div>

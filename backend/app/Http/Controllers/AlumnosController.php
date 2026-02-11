@@ -120,22 +120,20 @@ class AlumnosController extends Controller {
             'horariosDia.horariosTramo',
         ]);
 
+        $tutor = $alumno->tutor;
+
         return response()->json([
             'alumno' => [
                 'nombre' => $alumno->nombre,
                 'apellidos' => $alumno->apellidos,
             ],
+            'tutor' => $tutor,
             'estancia' => [
                 'fecha_inicio' => optional($estanciaActual->fecha_inicio)->toDateString(),
                 'fecha_fin' => optional($estanciaActual->fecha_fin)->toDateString(),
                 'puesto' => $estanciaActual->puesto,
                 'empresa' => $estanciaActual->empresa ? [
                     'nombre' => $estanciaActual->empresa->nombre,
-                ] : null,
-                'tutor' => $estanciaActual->tutor ? [
-                    'nombre' => $estanciaActual->tutor->nombre,
-                    'apellidos' => $estanciaActual->tutor->apellidos,
-                    'telefono' => $estanciaActual->tutor->telefono,
                 ] : null,
                 'instructor' => $estanciaActual->instructor ? [
                     'nombre' => $estanciaActual->instructor->nombre,

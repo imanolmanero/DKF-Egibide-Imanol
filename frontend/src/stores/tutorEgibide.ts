@@ -283,7 +283,10 @@ export const useTutorEgibideStore = defineStore("tutorEgibide", () => {
         empresa_id: empresaId,
       } as any;
     } else {
-      alumnoToUpdate.estancias.empresa_id = empresaId;
+      const estancia = alumnoToUpdate.estancias[0] ?? null;
+      if(estancia){
+        estancia.empresa_id = empresaId;
+      }
     }
   }
 

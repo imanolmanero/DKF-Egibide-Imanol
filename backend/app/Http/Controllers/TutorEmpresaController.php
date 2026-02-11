@@ -39,7 +39,8 @@ class TutorEmpresaController extends Controller {
 
     if (!$instructor) {
         return response()->json([
-            'message' => 'El usuario no tiene instructor (tutor de empresa) asociado.'
+            'message' => 'El usuario no tiene instructor (tutor de empresa) asociado.',
+            'user' => $user
         ], 404);
     }
 

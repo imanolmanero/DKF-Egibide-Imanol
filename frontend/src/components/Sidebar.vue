@@ -29,11 +29,6 @@ const userId = computed(() => authStore.currentUser.id);
         </h3>
         <ul class="list-unstyled mb-0">
           <li>
-            <RouterLink to="/alumno/mis-datos" class="sidebar-item"
-              >Mis Datos</RouterLink
-            >
-          </li>
-          <li>
             <RouterLink to="/alumno/empresa" class="sidebar-item"
               >Empresa</RouterLink
             >
