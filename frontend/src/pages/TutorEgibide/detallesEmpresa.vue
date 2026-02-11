@@ -10,6 +10,8 @@ interface Instructor {
   apellidos: string;
   telefono: string | null;
   ciudad: string | null;
+  empresa_id?: number;
+  user_id?: number;
 }
 
 interface EmpresaDetalle extends Empresa {
@@ -25,6 +27,31 @@ const baseURL = import.meta.env.VITE_API_BASE_URL;
 const empresa = ref<EmpresaDetalle | null>(null);
 const isLoading = ref(true);
 const error = ref<string | null>(null);
+
+// Modales
+const showCrearModal = ref(false);
+const showAsignarModal = ref(false);
+
+// Estados de formularios
+const isSubmitting = ref(false);
+const submitError = ref<string | null>(null);
+const submitSuccess = ref<string | null>(null);
+
+// Datos para crear instructor
+const nuevoInstructor = ref({
+  nombre: "",
+  apellidos: "",
+  email: "",
+  telefono: "",
+  ciudad: "",
+  password: "",
+  confirmarPassword: "",
+});
+
+// Datos para asignar instructor
+const instructoresDisponibles = ref<Instructor[]>([]);
+const instructorSeleccionado = ref<number | null>(null);
+const isLoadingInstructores = ref(false);
 
 // Obtener parámetros de la ruta
 const empresaId = Number(route.params.empresaId);
@@ -65,20 +92,243 @@ const cargarDetalleEmpresa = async () => {
 const volver = () => {
   router.back();
 };
+
+// Abrir modal de crear instructor
+const abrirModalCrear = () => {
+  resetFormularioCrear();
+  submitError.value = null;
+  submitSuccess.value = null;
+  showCrearModal.value = true;
+};
+
+// Abrir modal de asignar instructor
+const abrirModalAsignar = async () => {
+  resetFormularioAsignar();
+  submitError.value = null;
+  submitSuccess.value = null;
+  showAsignarModal.value = true;
+  await cargarInstructoresDisponibles();
+};
+
+// Reset formularios
+const resetFormularioCrear = () => {
+  nuevoInstructor.value = {
+    nombre: "",
+    apellidos: "",
+    email: "",
+    telefono: "",
+    ciudad: "",
+    password: "",
+    confirmarPassword: "",
+  };
+};
+
+const resetFormularioAsignar = () => {
+  instructorSeleccionado.value = null;
+  instructoresDisponibles.value = [];
+};
+
+// Cargar instructores disponibles
+const cargarInstructoresDisponibles = async () => {
+  isLoadingInstructores.value = true;
+  try {
+    const response = await fetch(
+      `${baseURL}/api/instructores/disponibles`,
+      {
+        headers: {
+          Authorization: authStore.token ? `Bearer ${authStore.token}` : "",
+          Accept: "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Error al cargar instructores");
+    }
+
+    const data = await response.json();
+    instructoresDisponibles.value = data;
+  } catch (err) {
+    console.error(err);
+    submitError.value = "Error al cargar la lista de instructores";
+  } finally {
+    isLoadingInstructores.value = false;
+  }
+};
+
+// Validación de formulario de crear
+const validarFormularioCrear = (): boolean => {
+  if (!nuevoInstructor.value.nombre.trim()) {
+    submitError.value = "El nombre es obligatorio";
+    return false;
+  }
+  if (!nuevoInstructor.value.apellidos.trim()) {
+    submitError.value = "Los apellidos son obligatorios";
+    return false;
+  }
+  if (!nuevoInstructor.value.email.trim()) {
+    submitError.value = "El email es obligatorio";
+    return false;
+  }
+  // Validación básica de email
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(nuevoInstructor.value.email)) {
+    submitError.value = "El email no es válido";
+    return false;
+  }
+  if (!nuevoInstructor.value.password) {
+    submitError.value = "La contraseña es obligatoria";
+    return false;
+  }
+  if (nuevoInstructor.value.password.length < 8) {
+    submitError.value = "La contraseña debe tener al menos 8 caracteres";
+    return false;
+  }
+  if (nuevoInstructor.value.password !== nuevoInstructor.value.confirmarPassword) {
+    submitError.value = "Las contraseñas no coinciden";
+    return false;
+  }
+  return true;
+};
+
+// Crear nuevo instructor
+const crearInstructor = async () => {
+  submitError.value = null;
+  
+  if (!validarFormularioCrear()) {
+    return;
+  }
+
+  isSubmitting.value = true;
+
+  try {
+    const response = await fetch(`${baseURL}/api/instructores/crear`, {
+      method: "POST",
+      headers: {
+        Authorization: authStore.token ? `Bearer ${authStore.token}` : "",
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        empresa_id: empresaId,
+        nombre: nuevoInstructor.value.nombre,
+        apellidos: nuevoInstructor.value.apellidos,
+        email: nuevoInstructor.value.email,
+        telefono: nuevoInstructor.value.telefono || null,
+        ciudad: nuevoInstructor.value.ciudad || null,
+        password: nuevoInstructor.value.password,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Error al crear el instructor");
+    }
+
+    submitSuccess.value = "Instructor creado exitosamente";
+    
+    // Esperar un momento y cerrar modal
+    setTimeout(async () => {
+      showCrearModal.value = false;
+      await cargarDetalleEmpresa(); // Recargar datos
+      submitSuccess.value = null;
+    }, 1500);
+
+  } catch (err: any) {
+    console.error(err);
+    submitError.value = err.message || "Error al crear el instructor";
+  } finally {
+    isSubmitting.value = false;
+  }
+};
+
+// Asignar instructor existente
+const asignarInstructor = async () => {
+  submitError.value = null;
+
+  if (!instructorSeleccionado.value) {
+    submitError.value = "Debes seleccionar un instructor";
+    return;
+  }
+
+  isSubmitting.value = true;
+
+  try {
+    const response = await fetch(`${baseURL}/api/instructores/asignar`, {
+      method: "POST",
+      headers: {
+        Authorization: authStore.token ? `Bearer ${authStore.token}` : "",
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        instructor_id: instructorSeleccionado.value,
+        empresa_id: empresaId,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Error al asignar el instructor");
+    }
+
+    submitSuccess.value = "Instructor asignado exitosamente";
+    
+    // Esperar un momento y cerrar modal
+    setTimeout(async () => {
+      showAsignarModal.value = false;
+      await cargarDetalleEmpresa(); // Recargar datos
+      submitSuccess.value = null;
+    }, 1500);
+
+  } catch (err: any) {
+    console.error(err);
+    submitError.value = err.message || "Error al asignar el instructor";
+  } finally {
+    isSubmitting.value = false;
+  }
+};
+
+// Cerrar modales
+const cerrarModalCrear = () => {
+  if (!isSubmitting.value) {
+    showCrearModal.value = false;
+    resetFormularioCrear();
+    submitError.value = null;
+    submitSuccess.value = null;
+  }
+};
+
+const cerrarModalAsignar = () => {
+  if (!isSubmitting.value) {
+    showAsignarModal.value = false;
+    resetFormularioAsignar();
+    submitError.value = null;
+    submitSuccess.value = null;
+  }
+};
 </script>
 
 <template>
   <div class="container mt-4">
     <!-- Estado de carga -->
     <div v-if="isLoading" class="text-center py-5">
-      <div class="spinner-border" style="color: #81045f;" role="status">
+      <div class="spinner-border" style="color: #81045f" role="status">
         <span class="visually-hidden">Cargando...</span>
       </div>
-      <p class="mt-3 text-muted fw-semibold">Cargando información de la empresa...</p>
+      <p class="mt-3 text-muted fw-semibold">
+        Cargando información de la empresa...
+      </p>
     </div>
 
     <!-- Error -->
-    <div v-else-if="error" class="alert alert-danger d-flex align-items-center" role="alert">
+    <div
+      v-else-if="error"
+      class="alert alert-danger d-flex align-items-center"
+      role="alert"
+    >
       <i class="bi bi-exclamation-triangle-fill me-2"></i>
       <div>
         {{ error }}
@@ -89,7 +339,10 @@ const volver = () => {
     </div>
 
     <!-- Sin empresa -->
-    <div v-else-if="!empresa" class="alert alert-warning d-flex align-items-center">
+    <div
+      v-else-if="!empresa"
+      class="alert alert-warning d-flex align-items-center"
+    >
       <i class="bi bi-building-x me-2"></i>
       <div>
         No se encontró información de la empresa
@@ -162,13 +415,34 @@ const volver = () => {
         </div>
       </div>
 
+      <!-- Sección de Instructores con botones de acción -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="mb-0">
+          <i class="bi bi-person-badge-fill me-2"></i>
+          Instructores
+        </h4>
+        <div class="btn-group" role="group">
+          <button
+            type="button"
+            class="btn btn-primary"
+            @click="abrirModalCrear"
+          >
+            <i class="bi bi-plus-circle me-1"></i>
+            Crear Nuevo Instructor
+          </button>
+          <button
+            type="button"
+            class="btn btn-outline-primary"
+            @click="abrirModalAsignar"
+          >
+            <i class="bi bi-person-plus me-1"></i>
+            Asignar Instructor Existente
+          </button>
+        </div>
+      </div>
+
       <!-- Instructores -->
       <div v-if="empresa.instructores && empresa.instructores.length > 0">
-        <h4 class="mb-3">
-          <i class="bi bi-person-badge-fill me-2"></i>
-          {{ empresa.instructores.length === 1 ? 'Instructor' : 'Instructores' }}
-        </h4>
-
         <div class="row g-3">
           <div
             v-for="instructor in empresa.instructores"
@@ -182,7 +456,9 @@ const volver = () => {
                     <i class="bi bi-person-fill"></i>
                   </div>
                   <div>
-                    <h5 class="mb-0">{{ instructor.nombre }} {{ instructor.apellidos }}</h5>
+                    <h5 class="mb-0">
+                      {{ instructor.nombre }} {{ instructor.apellidos }}
+                    </h5>
                   </div>
                 </div>
 
@@ -210,6 +486,273 @@ const volver = () => {
         No hay instructores asignados a esta empresa actualmente.
       </div>
     </div>
+
+    <!-- Modal Crear Instructor -->
+    <div
+      class="modal fade"
+      :class="{ show: showCrearModal }"
+      :style="{ display: showCrearModal ? 'block' : 'none' }"
+      tabindex="-1"
+      @click.self="cerrarModalCrear"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="bi bi-person-plus-fill me-2"></i>
+              Crear Nuevo Instructor
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              @click="cerrarModalCrear"
+              :disabled="isSubmitting"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <!-- Mensajes de error/éxito -->
+            <div v-if="submitError" class="alert alert-danger" role="alert">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+              {{ submitError }}
+            </div>
+            <div v-if="submitSuccess" class="alert alert-success" role="alert">
+              <i class="bi bi-check-circle-fill me-2"></i>
+              {{ submitSuccess }}
+            </div>
+
+            <form @submit.prevent="crearInstructor">
+              <!-- Mensaje informativo -->
+              <div class="alert alert-info mb-3">
+                <i class="bi bi-info-circle-fill me-2"></i>
+                <small>
+                  <strong>Nota:</strong> Una empresa solo puede tener un instructor. Si {{ empresa?.nombre }} ya tiene uno asignado, será reemplazado automáticamente por este nuevo instructor.
+                </small>
+              </div>
+
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label for="nombre" class="form-label">Nombre *</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="nombre"
+                    v-model="nuevoInstructor.nombre"
+                    :disabled="isSubmitting"
+                    required
+                  />
+                </div>
+                <div class="col-md-6">
+                  <label for="apellidos" class="form-label">Apellidos *</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="apellidos"
+                    v-model="nuevoInstructor.apellidos"
+                    :disabled="isSubmitting"
+                    required
+                  />
+                </div>
+                <div class="col-12">
+                  <label for="email" class="form-label">Email *</label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="email"
+                    v-model="nuevoInstructor.email"
+                    :disabled="isSubmitting"
+                    required
+                  />
+                </div>
+                <div class="col-md-6">
+                  <label for="telefono" class="form-label">Teléfono</label>
+                  <input
+                    type="tel"
+                    class="form-control"
+                    id="telefono"
+                    v-model="nuevoInstructor.telefono"
+                    :disabled="isSubmitting"
+                  />
+                </div>
+                <div class="col-md-6">
+                  <label for="ciudad" class="form-label">Ciudad</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="ciudad"
+                    v-model="nuevoInstructor.ciudad"
+                    :disabled="isSubmitting"
+                  />
+                </div>
+                <div class="col-md-6">
+                  <label for="password" class="form-label">Contraseña *</label>
+                  <input
+                    type="password"
+                    class="form-control"
+                    id="password"
+                    v-model="nuevoInstructor.password"
+                    :disabled="isSubmitting"
+                    minlength="8"
+                    required
+                  />
+                  <small class="text-muted">Mínimo 8 caracteres</small>
+                </div>
+                <div class="col-md-6">
+                  <label for="confirmarPassword" class="form-label"
+                    >Confirmar Contraseña *</label
+                  >
+                  <input
+                    type="password"
+                    class="form-control"
+                    id="confirmarPassword"
+                    v-model="nuevoInstructor.confirmarPassword"
+                    :disabled="isSubmitting"
+                    minlength="8"
+                    required
+                  />
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              @click="cerrarModalCrear"
+              :disabled="isSubmitting"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              @click="crearInstructor"
+              :disabled="isSubmitting"
+            >
+              <span
+                v-if="isSubmitting"
+                class="spinner-border spinner-border-sm me-2"
+              ></span>
+              {{ isSubmitting ? "Creando..." : "Crear Instructor" }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Asignar Instructor -->
+    <div
+      class="modal fade"
+      :class="{ show: showAsignarModal }"
+      :style="{ display: showAsignarModal ? 'block' : 'none' }"
+      tabindex="-1"
+      @click.self="cerrarModalAsignar"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="bi bi-person-check-fill me-2"></i>
+              Asignar Instructor Existente
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              @click="cerrarModalAsignar"
+              :disabled="isSubmitting"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <!-- Mensajes de error/éxito -->
+            <div v-if="submitError" class="alert alert-danger" role="alert">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+              {{ submitError }}
+            </div>
+            <div v-if="submitSuccess" class="alert alert-success" role="alert">
+              <i class="bi bi-check-circle-fill me-2"></i>
+              {{ submitSuccess }}
+            </div>
+
+            <!-- Loading instructores -->
+            <div v-if="isLoadingInstructores" class="text-center py-3">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando instructores...</span>
+              </div>
+              <p class="mt-2 text-muted">Cargando instructores...</p>
+            </div>
+
+            <!-- Formulario de selección -->
+            <div v-else>
+              <div class="mb-3">
+                <label for="instructorSelect" class="form-label"
+                  >Seleccionar Instructor *</label
+                >
+                <select
+                  class="form-select"
+                  id="instructorSelect"
+                  v-model="instructorSeleccionado"
+                  :disabled="isSubmitting"
+                  required
+                >
+                  <option :value="null" selected disabled>
+                    -- Selecciona un instructor --
+                  </option>
+                  <option
+                    v-for="instructor in instructoresDisponibles"
+                    :key="instructor.id"
+                    :value="instructor.id"
+                  >
+                    {{ instructor.nombre }} {{ instructor.apellidos }}
+                    <span v-if="instructor.empresa_id" class="text-muted">
+                      (Actualmente en otra empresa)
+                    </span>
+                  </option>
+                </select>
+                <small class="text-muted">
+                  El instructor será reasignado a esta empresa
+                </small>
+              </div>
+
+              <!-- Info del instructor seleccionado -->
+              <div
+                v-if="instructorSeleccionado"
+                class="alert alert-warning mt-3"
+              >
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <strong>Importante:</strong> Si {{ empresa?.nombre }} ya tiene un instructor asignado, este será reemplazado por el instructor seleccionado. El instructor anterior quedará sin empresa asignada.
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              @click="cerrarModalAsignar"
+              :disabled="isSubmitting"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              @click="asignarInstructor"
+              :disabled="isSubmitting || !instructorSeleccionado"
+            >
+              <span
+                v-if="isSubmitting"
+                class="spinner-border spinner-border-sm me-2"
+              ></span>
+              {{ isSubmitting ? "Asignando..." : "Asignar Instructor" }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal backdrop -->
+    <div
+      v-if="showCrearModal || showAsignarModal"
+      class="modal-backdrop fade show"
+    ></div>
   </div>
 </template>
 
@@ -218,11 +761,8 @@ const volver = () => {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: linear-gradient(
-    135deg,
-    #81045f 0%,
-    #2c3e50 100%
-  );  display: flex;
+  background: linear-gradient(135deg, #81045f 0%, #2c3e50 100%);
+  display: flex;
   align-items: center;
   justify-content: center;
   color: white;
@@ -234,11 +774,8 @@ const volver = () => {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: linear-gradient(
-    135deg,
-    #81045f 0%,
-    #2c3e50 100%
-  );  display: flex;
+  background: linear-gradient(135deg, #81045f 0%, #2c3e50 100%);
+  display: flex;
   align-items: center;
   justify-content: center;
   color: white;
@@ -277,5 +814,35 @@ const volver = () => {
 .instructor-info .info-item {
   background-color: transparent;
   padding: 0.5rem 0;
+}
+
+/* Modal styles */
+.modal {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal.show {
+  display: block !important;
+}
+
+.btn-primary {
+  background-color: #81045f;
+  border-color: #81045f;
+}
+
+.btn-primary:hover {
+  background-color: #6a0350;
+  border-color: #6a0350;
+}
+
+.btn-outline-primary {
+  color: #81045f;
+  border-color: #81045f;
+}
+
+.btn-outline-primary:hover {
+  background-color: #81045f;
+  border-color: #81045f;
+  color: white;
 }
 </style>

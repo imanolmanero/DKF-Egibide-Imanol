@@ -37,14 +37,6 @@ const router = createRouter({
           meta: { role: "alumno" },
         },
         {
-          path: "alumno/mis-datos",
-          name: "alumno-datos",
-          components: {
-            main: () => import("@/pages/Alumno/misDatosView.vue"),
-          },
-          meta: { role: "alumno" },
-        },
-        {
           path: "alumno/empresa",
           name: "alumno-empresa",
           components: {

@@ -93,6 +93,10 @@ Route::middleware('auth:sanctum')->group(
         Route::get('/tutorEmpresa/inicio', [TutorEmpresaController::class, 'inicioInstructor']);
         Route::get('/tutorEmpresa/{tutorId}/alumnos', [TutorEmpresaController::class, 'getAlumnosByCurrentInstructor']);
         Route::get('/me/tutor-empresa', [TutorEmpresaController::class, 'me']);
+        Route::get('/instructores', [TutorEmpresaController::class, 'index']);
+        Route::get('/instructores/disponibles', [TutorEmpresaController::class, 'getInstructoresDisponibles']);
+        Route::post('/instructores/crear', [TutorEmpresaController::class, 'crearInstructor']);
+        Route::post('/instructores/asignar', [TutorEmpresaController::class, 'asignarInstructor']);
 
         // Seguimientos
         Route::get('/seguimientos/alumno/{alumno_Id}', [SeguimientosController::class, 'seguimientosAlumno']);
