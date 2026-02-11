@@ -11,7 +11,6 @@ COSAS QUE HAY QUE HACER:
 - Paginacion de "Mis grados".
 
 ADMIN:
-- Añadir en el formulario de Ciclo el campo Código.
 - Crear RA
 - Borrar tabla Cursos
 - Arreglar tutor_egibide al crear alumno
