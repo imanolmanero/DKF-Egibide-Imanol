@@ -73,7 +73,8 @@ Route::middleware('auth:sanctum')->group(
         Route::get('/me/alumno', [AlumnosController::class, 'me']);
         Route::get('/alumnos/{alumno_id}/asignaturas', [AlumnosController::class, 'getAsignaturasAlumno']);
         Route::get('/alumnos/{alumno}/entregas', [AlumnosController::class, 'entregas']);
-
+        Route::get('/alumnos/{alumno_id}/instructores', [TutorEgibideController::class, 'getInstructoresParaAlumno']);
+        Route::post('/alumnos/asignar-instructor', [TutorEgibideController::class, 'asignarInstructorAlumno']);
         //Entregas
         Route::get('/entregas/mias', [EntregaController::class, 'mias']);
         Route::post('/entregas', [EntregaController::class, 'store']);

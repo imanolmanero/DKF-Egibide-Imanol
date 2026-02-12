@@ -39,18 +39,16 @@ class CompetenciasController extends Controller {
 
     public function getCompetenciasTecnicasByAlumno($alumno_id)
     {
-        $estancia = Estancia::with('curso')->where('alumno_id', $alumno_id)->firstOrFail();
+        $estancia = Estancia::with('alumno.ciclo')->where('alumno_id', $alumno_id)->firstOrFail();
 
-        if (!$estancia->curso) {
-            // Sin curso no podemos saber el ciclo => devolvemos vacío pero OK
+        $alumno = $estancia->alumno;
+        if (!$alumno || !$alumno->ciclo) {
             return response()->json([]);
         }
 
-        $cicloId = $estancia->curso->ciclo_id;
+        $cicloId = $alumno->ciclo->id;
 
-        $competenciasTec = CompetenciaTec::whereHas('ciclo', function ($query) use ($cicloId) {
-            $query->where('id', $cicloId);
-        })->get();
+        $competenciasTec = CompetenciaTec::where('ciclo_id', $cicloId)->get();
 
         return response()->json($competenciasTec);
     }
@@ -79,14 +77,14 @@ class CompetenciasController extends Controller {
 
     public function getCompetenciasTransversalesByAlumno($alumno_id)
     {
-        $estancia = Estancia::with('curso.ciclo')->where('alumno_id', $alumno_id)->firstOrFail();
+        $estancia = Estancia::with('alumno.ciclo')->where('alumno_id', $alumno_id)->firstOrFail();
 
-        if (!$estancia->curso || !$estancia->curso->ciclo) {
-            // Sin curso/ciclo no se puede deducir la familia => devolvemos vacío pero OK
+        $alumno = $estancia->alumno;
+        if (!$alumno || !$alumno->ciclo) {
             return response()->json([]);
         }
 
-        $familiaId = $estancia->curso->ciclo->familia_profesional_id;
+        $familiaId = $alumno->ciclo->familia_profesional_id;
 
         $competenciasTrans = CompetenciaTransversal::where('familia_profesional_id', $familiaId)->get();
 

@@ -178,7 +178,7 @@ class AlumnosController extends Controller {
 
     public function getAsignaturasAlumno($alumno_id) {
         $alumno = Alumnos::where('id', $alumno_id)
-            ->with('curso.ciclo.asignaturas')
+            ->with('ciclo.asignaturas')
             ->firstOrFail();
 
         $asignaturas = $alumno->curso->ciclo->asignaturas;

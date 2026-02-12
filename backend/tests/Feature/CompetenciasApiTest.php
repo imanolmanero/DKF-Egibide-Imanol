@@ -37,9 +37,11 @@ class CompetenciasApiTest extends TestCase
         // Familia profesional
         $familia = FamiliaProfesional::factory()->create();
 
-        // Ciclo
+        // Ciclo con grupo
+        $grupo = fake()->unique()->bothify('DAW##');
         $ciclo = Ciclos::factory()->create([
             'familia_profesional_id' => $familia->id,
+            'grupo' => $grupo,
         ]);
 
         // Instructor
@@ -59,6 +61,7 @@ class CompetenciasApiTest extends TestCase
         $userAlumno = User::factory()->create(['role' => 'alumno']);
         $alumno = Alumnos::factory()->create([
             'user_id' => $userAlumno->id,
+            'grupo' => $grupo,
         ]);
 
         // Estancia
