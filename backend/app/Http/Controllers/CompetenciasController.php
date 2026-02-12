@@ -37,17 +37,26 @@ class CompetenciasController extends Controller {
         );
     }
 
-    public function getCompetenciasTecnicasByAlumno($alumno_id) {
-        $estancia = Estancia::where('alumno_id', $alumno_id)->firstOrFail();
+    public function getCompetenciasTecnicasByAlumno($alumno_id)
+    {
+        $estancia = Estancia::with('alumno.ciclo')->where('alumno_id', $alumno_id)->firstOrFail();
 
-        $competenciasTec = CompetenciaTec::whereHas('ciclo', function ($query) use ($estancia) {
-            $query->where('ciclo_id', $estancia->curso->ciclo_id);
-        })->get();
+        $alumno = $estancia->alumno;
+        if (!$alumno || !$alumno->ciclo) {
+            return response()->json([]);
+        }
+
+        $cicloId = $alumno->ciclo->id;
+
+        $competenciasTec = CompetenciaTec::where('ciclo_id', $cicloId)->get();
 
         return response()->json($competenciasTec);
     }
 
-    public function getCompetenciasTecnicasAsignadasByAlumno($alumno_id) {
+
+
+   public function getCompetenciasTecnicasAsignadasByAlumno($alumno_id)
+    {
         $estancia = Estancia::where('alumno_id', $alumno_id)->firstOrFail();
 
         $competenciasTecAsignadas = NotaCompetenciaTec::where('estancia_id', $estancia->id)
@@ -65,15 +74,23 @@ class CompetenciasController extends Controller {
         return response()->json($resultado);
     }
 
-    public function getCompetenciasTransversalesByAlumno($alumno_id) {
-        $estancia = Estancia::where('alumno_id', $alumno_id)->firstOrFail();
 
-        $familiaId = $estancia->curso->ciclo->familia_profesional_id;
+    public function getCompetenciasTransversalesByAlumno($alumno_id)
+    {
+        $estancia = Estancia::with('alumno.ciclo')->where('alumno_id', $alumno_id)->firstOrFail();
+
+        $alumno = $estancia->alumno;
+        if (!$alumno || !$alumno->ciclo) {
+            return response()->json([]);
+        }
+
+        $familiaId = $alumno->ciclo->familia_profesional_id;
 
         $competenciasTrans = CompetenciaTransversal::where('familia_profesional_id', $familiaId)->get();
 
         return response()->json($competenciasTrans);
     }
+
 
     public function getCalificacionesCompetenciasTecnicas($alumno_id) {
         $estancia = Estancia::where('alumno_id', $alumno_id)->firstOrFail();

@@ -16,6 +16,7 @@ use App\Models\FamiliaProfesional;
 use App\Models\Estancia;
 use App\Models\NotaCompetenciaTec;
 use App\Models\NotaCompetenciaTransversal;
+use App\Models\Empresas;
 
 class CompetenciasApiTest extends TestCase
 {
@@ -30,30 +31,28 @@ class CompetenciasApiTest extends TestCase
 
     private function crearEstructuraCompleta(): array
     {
+        // Empresa
+        $empresa = Empresas::factory()->create();
+
         // Familia profesional
         $familia = FamiliaProfesional::factory()->create();
 
-        // Ciclo
+        // Ciclo con grupo
+        $grupo = fake()->unique()->bothify('DAW##');
         $ciclo = Ciclos::factory()->create([
             'familia_profesional_id' => $familia->id,
+            'grupo' => $grupo,
         ]);
 
-        // Curso
-        $cursoId = DB::table('cursos')->insertGetId([
-            'numero' => 1,
-            'ciclo_id' => $ciclo->id,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        // Tutor
-        $userTutor = User::factory()->create(['role' => 'tutor_egibide']);
-        $tutorId = DB::table('tutores')->insertGetId([
-            'nombre' => 'Tutor',
+        // Instructor
+        $userInstructor = User::factory()->create(['role' => 'instructor']);
+        $instructorId = DB::table('instructores')->insertGetId([
+            'nombre' => 'Instructor',
             'apellidos' => 'Pruebas',
             'telefono' => '600000000',
             'ciudad' => 'Vitoria',
-            'user_id' => $userTutor->id,
+            'empresa_id' => $empresa->id,
+            'user_id' => $userInstructor->id,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -62,19 +61,20 @@ class CompetenciasApiTest extends TestCase
         $userAlumno = User::factory()->create(['role' => 'alumno']);
         $alumno = Alumnos::factory()->create([
             'user_id' => $userAlumno->id,
+            'grupo' => $grupo,
         ]);
 
         // Estancia
         $estancia = Estancia::create([
             'alumno_id' => $alumno->id,
-            'curso_id' => $cursoId,
-            'tutor_id' => $tutorId,
+            'instructor_id' => $instructorId,
+            'empresa_id' => $empresa->id,
             'puesto' => 'Desarrollador',
             'fecha_inicio' => now(),
             'horas_totales' => 400,
         ]);
 
-        return compact('familia', 'ciclo', 'cursoId', 'tutorId', 'alumno', 'estancia');
+        return compact('familia', 'ciclo', 'instructorId', 'empresa', 'alumno', 'estancia');
     }
 
     public function test_requiere_autenticacion(): void

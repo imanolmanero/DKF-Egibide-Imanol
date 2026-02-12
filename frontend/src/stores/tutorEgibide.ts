@@ -201,74 +201,85 @@ export const useTutorEgibideStore = defineStore("tutorEgibide", () => {
   // Guardar horario y periodo de alumno
   async function guardarHorarioAlumno(
     alumnoId: number,
-    fechaInicio: string,
-    fechaFin: string | null,
-    horasTotales: number,
+    data: {
+      fecha_inicio: string;
+      fecha_fin: string | null;
+      horario: any[];
+    }
   ) {
-    if (!fechaInicio || !horasTotales) {
-      setMessage(
-        "Debes completar la fecha inicio y las horas totales",
-        "error",
-      );
+    if (!data.fecha_inicio) {
+      setMessage("Debes indicar fecha de inicio", "error");
       return false;
     }
 
     try {
       const payload = {
         alumno_id: alumnoId,
-        fecha_inicio: fechaInicio,
-        fecha_fin: fechaFin || null,
-        horas_totales: horasTotales,
+        fecha_inicio: data.fecha_inicio,
+        fecha_fin: data.fecha_fin,
+        horario: data.horario,
       };
 
       const response = await fetch(`${baseURL}/api/horasperiodo`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: authStore.token ? `Bearer ${authStore.token}` : "",
+          Authorization: authStore.token
+            ? `Bearer ${authStore.token}`
+            : "",
           Accept: "application/json",
         },
         body: JSON.stringify(payload),
       });
 
-      const contentType = response.headers.get("content-type") || "";
-      let data: any = null;
-      if (contentType.includes("application/json")) {
-        data = await response.json();
-      }
+      const dataResponse = await response.json();
 
       if (!response.ok) {
         setMessage(
-          data?.message ||
-            `Error al guardar la estancia. Código: ${response.status}`,
-          "error",
+          dataResponse?.message || "Error al guardar horario",
+          "error"
         );
         return false;
       }
 
-      // Actualizar store local
-      const alumnoStore = alumnosAsignados.value.find(
-        (a) =>
-          Number(a.pivot?.alumno_id) === alumnoId || Number(a.id) === alumnoId,
-      );
-
-      if (alumnoStore) {
-        (alumnoStore as any).pivot = {
-          ...(alumnoStore.pivot ?? { alumno_id: alumnoId }),
-          fecha_inicio: fechaInicio,
-          fecha_fin: fechaFin,
-          horas_totales: horasTotales,
-        };
-      }
-
-      setMessage("Horario y calendario guardados correctamente", "success");
+      setMessage("Horario guardado correctamente", "success");
       return true;
+
     } catch (err) {
       console.error(err);
-      setMessage("Error de conexión al guardar la estancia", "error");
+      setMessage("Error de conexión al guardar horario", "error");
       return false;
     }
   }
+
+  async function fetchHorarioAlumno(alumnoId: number) {
+    loading.value = true;
+    try {
+      const response = await fetch(`${baseURL}/api/horario/${alumnoId}`, {
+        headers: {
+          Authorization: authStore.token ? `Bearer ${authStore.token}` : "",
+          Accept: "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setMessage(data.message || "Error al obtener horario", "error");
+        return null;
+      }
+
+      return data;
+    } catch (err) {
+      console.error(err);
+      setMessage("Error de conexión al obtener horario", "error");
+      return null;
+    } finally {
+      loading.value = false;
+    }
+  }
+
+
 
   async function updateAlumnoEmpresa(alumnoId: number, empresaId: number) {
     const alumnoToUpdate = alumnosAsignados.value.find(
@@ -304,6 +315,7 @@ export const useTutorEgibideStore = defineStore("tutorEgibide", () => {
     fetchAlumnosAsignados,
     fetchEmpresasAsignadas,
     guardarHorarioAlumno,
+    fetchHorarioAlumno,
     updateAlumnoEmpresa,
     setMessage,
     fetchAlumnosDeMiCursoSinTutorAsignado,

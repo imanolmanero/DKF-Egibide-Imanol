@@ -12,6 +12,7 @@ use App\Models\Alumnos;
 use App\Models\Ciclos;
 use App\Models\FamiliaProfesional;
 use App\Models\Empresas;
+use App\Models\TutorEgibide;
 use App\Models\Estancia;
 
 class AdminApiTest extends TestCase
@@ -55,22 +56,19 @@ class AdminApiTest extends TestCase
         $admin = $this->authAsAdmin();
 
         // Crear datos de prueba
-        // Nota: Alumnos::factory()->count(5)->create() crea 5 ciclos también (uno por alumno)
         Alumnos::factory()->count(5)->create();
         Empresas::factory()->count(3)->create();
         Ciclos::factory()->count(2)->create();
 
-        // Total de ciclos: 5 (from alumnos) + 2 (created explicitly) = 7
         // Crear tutores
         $userTutor = User::factory()->create(['role' => 'tutor_egibide']);
-        DB::table('tutores')->insert([
+        TutorEgibide::create([
             'nombre' => 'Tutor',
             'apellidos' => 'Test',
+            'alias' => 'tutor_test',
             'telefono' => '600000000',
             'ciudad' => 'Vitoria',
             'user_id' => $userTutor->id,
-            'created_at' => now(),
-            'updated_at' => now(),
         ]);
 
         $response = $this->getJson('/api/admin/inicio');
@@ -93,7 +91,7 @@ class AdminApiTest extends TestCase
             ->assertJsonPath('counts.alumnos', 5)
             ->assertJsonPath('counts.empresas', 3)
             ->assertJsonPath('counts.tutores', 1)
-            ->assertJsonPath('counts.ciclos', 7);
+            ->assertJsonPath('counts.ciclos', 2);
     }
 
     public function test_inicio_admin_con_datos_vacios(): void
@@ -128,15 +126,7 @@ class AdminApiTest extends TestCase
         $this->authAsAdmin();
 
         // Crear estructura completa
-        $familia = FamiliaProfesional::factory()->create();
-        $ciclo = Ciclos::factory()->create(['familia_profesional_id' => $familia->id]);
-
-        $cursoId = DB::table('cursos')->insertGetId([
-            'numero' => 1,
-            'ciclo_id' => $ciclo->id,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        $empresa = Empresas::factory()->create(['nombre' => 'Tech S.L.']);
 
         $userAlumno = User::factory()->create(['role' => 'alumno']);
         $alumno = Alumnos::factory()->create([
@@ -145,23 +135,21 @@ class AdminApiTest extends TestCase
             'apellidos' => 'García Pérez',
         ]);
 
-        $empresa = Empresas::factory()->create(['nombre' => 'Tech S.L.']);
-
-        $userTutor = User::factory()->create(['role' => 'tutor_egibide']);
-        $tutorId = DB::table('tutores')->insertGetId([
-            'nombre' => 'Tutor',
+        $userInstructor = User::factory()->create(['role' => 'instructor']);
+        $instructorId = DB::table('instructores')->insertGetId([
+            'nombre' => 'Instructor',
             'apellidos' => 'Test',
             'telefono' => '600000000',
             'ciudad' => 'Vitoria',
-            'user_id' => $userTutor->id,
+            'empresa_id' => $empresa->id,
+            'user_id' => $userInstructor->id,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
         Estancia::create([
             'alumno_id' => $alumno->id,
-            'curso_id' => $cursoId,
-            'tutor_id' => $tutorId,
+            'instructor_id' => $instructorId,
             'empresa_id' => $empresa->id,
             'puesto' => 'Desarrollador Junior',
             'fecha_inicio' => now(),
@@ -240,29 +228,20 @@ class AdminApiTest extends TestCase
     {
         $this->authAsAdmin();
 
-        $familia = FamiliaProfesional::factory()->create();
-        $ciclo = Ciclos::factory()->create(['familia_profesional_id' => $familia->id]);
-
-        $cursoId = DB::table('cursos')->insertGetId([
-            'numero' => 1,
-            'ciclo_id' => $ciclo->id,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
         $userAlumno = User::factory()->create(['role' => 'alumno']);
         $alumno = Alumnos::factory()->create(['user_id' => $userAlumno->id]);
 
         $empresa1 = Empresas::factory()->create(['nombre' => 'Empresa 1']);
         $empresa2 = Empresas::factory()->create(['nombre' => 'Empresa 2']);
 
-        $userTutor = User::factory()->create(['role' => 'tutor_egibide']);
-        $tutorId = DB::table('tutores')->insertGetId([
-            'nombre' => 'Tutor',
+        $userInstructor = User::factory()->create(['role' => 'instructor']);
+        $instructorId = DB::table('instructores')->insertGetId([
+            'nombre' => 'Instructor',
             'apellidos' => 'Test',
             'telefono' => '600000000',
             'ciudad' => 'Vitoria',
-            'user_id' => $userTutor->id,
+            'empresa_id' => $empresa1->id,
+            'user_id' => $userInstructor->id,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -270,8 +249,7 @@ class AdminApiTest extends TestCase
         // Estancia 1
         Estancia::create([
             'alumno_id' => $alumno->id,
-            'curso_id' => $cursoId,
-            'tutor_id' => $tutorId,
+            'instructor_id' => $instructorId,
             'empresa_id' => $empresa1->id,
             'puesto' => 'Junior',
             'fecha_inicio' => now()->subYear(),
@@ -282,8 +260,7 @@ class AdminApiTest extends TestCase
         // Estancia 2
         Estancia::create([
             'alumno_id' => $alumno->id,
-            'curso_id' => $cursoId,
-            'tutor_id' => $tutorId,
+            'instructor_id' => $instructorId,
             'empresa_id' => $empresa2->id,
             'puesto' => 'Senior',
             'fecha_inicio' => now(),

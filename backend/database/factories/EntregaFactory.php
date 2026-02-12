@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\Alumnos;
 use App\Models\Ciclos;
+use App\Models\Empresas;
 
 class EntregaFactory extends Factory
 {
@@ -25,31 +26,35 @@ class EntregaFactory extends Factory
             'updated_at' => now(),
         ]);
 
-        // 2) Crear Tutor (tabla tutores exige user_id)
-        $userTutor = User::factory()->create(['role' => 'tutor_egibide']);
+        // 2) Crear Empresa
+        $empresa = Empresas::factory()->create();
 
-        $tutorId = DB::table('tutores')->insertGetId([
-            'nombre' => 'Tutor',
+        // 3) Crear Instructor (tabla instructores requiere empresa_id)
+        $userInstructor = User::factory()->create(['role' => 'instructor']);
+
+        $instructorId = DB::table('instructores')->insertGetId([
+            'nombre' => 'Instructor',
             'apellidos' => 'Pruebas',
             'telefono' => '600000000',
             'ciudad' => 'Vitoria',
-            'user_id' => $userTutor->id,
+            'empresa_id' => $empresa->id,
+            'user_id' => $userInstructor->id,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
-        // 3) Crear Alumno
+        // 4) Crear Alumno
         $userAlumno = User::factory()->create(['role' => 'alumno']);
 
         $alumno = Alumnos::factory()->create([
             'user_id' => $userAlumno->id,
         ]);
 
-        // 4) Crear Estancia (campos NOT NULL: fecha_inicio, horas_totales)
+        // 5) Crear Estancia (campos NOT NULL: fecha_inicio, horas_totales)
         $estanciaId = DB::table('estancias')->insertGetId([
             'alumno_id' => $alumno->id,
-            'curso_id' => $cursoId,
-            'tutor_id' => $tutorId,
+            'instructor_id' => $instructorId,
+            'empresa_id' => $empresa->id,
             'puesto' => 'Sin asignar',
             'fecha_inicio' => now()->toDateString(),
             'horas_totales' => 0,
@@ -57,7 +62,7 @@ class EntregaFactory extends Factory
             'updated_at' => now(),
         ]);
 
-        // 5) Crear Cuaderno de prácticas (NOT NULL: estancia_id)
+        // 6) Crear Cuaderno de prácticas (NOT NULL: estancia_id)
         $cuadernoId = DB::table('cuadernos_practicas')->insertGetId([
             'estancia_id' => $estanciaId,
             'created_at' => now(),

@@ -15,8 +15,8 @@ class HorarioTramo extends Model {
   ];
 
   protected $casts = [
-    'hora_inicio' => 'time',
-    'hora_fin' => 'time',
+    'hora_inicio' => 'string',
+    'hora_fin' => 'string',
   ];
 
   /**

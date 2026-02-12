@@ -51,9 +51,7 @@ class TutorEmpresa extends Model {
             'fecha_inicio',
             'fecha_fin',
             'horas_totales',
-            'tutor_id',
-            'empresa_id',
-            'curso_id'
+            'empresa_id'
         ])->withTimestamps();
     }
 }

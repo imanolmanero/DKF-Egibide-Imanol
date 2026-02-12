@@ -43,9 +43,10 @@ class Alumnos extends Model {
         return $this->hasMany(NotaAsignatura::class);
     }
 
-    public function curso(): BelongsTo{
-        return $this->belongsTo(Curso::class,'curso_id','id');
+    public function ciclo(): BelongsTo{
+        return $this->belongsTo(Ciclos::class,'grupo','grupo');
     }
+
     public function tutor(): BelongsTo{
         return $this->belongsTo(TutorEgibide::class,'tutor_id','id');
     }
