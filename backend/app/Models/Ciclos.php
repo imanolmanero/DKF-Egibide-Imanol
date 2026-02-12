@@ -47,7 +47,7 @@ class Ciclos extends Model {
     }
 
     public function tutores(){
-        return $this->belongsToMany(TutorEgibide::class,'ciclo_tutor','ciclo_id','tutor_id')->whithTimestamps();
+        return $this->belongsToMany(TutorEgibide::class,'ciclo_tutor','ciclo_id','tutor_id')->withTimestamps();
     }
 
     public function alumnos(){

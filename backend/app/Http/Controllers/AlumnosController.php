@@ -33,7 +33,6 @@ class AlumnosController extends Controller {
             'apellidos' => ['required'],
             'telefono' => ['required'],
             'ciudad' => ['required'],
-            'curso' => ['required'],
             'tutor' => ['required']
         ]);
 

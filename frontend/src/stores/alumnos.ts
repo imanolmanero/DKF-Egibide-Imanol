@@ -200,7 +200,6 @@ export const useAlumnosStore = defineStore("alumnos", () => {
     apellidos: string,
     telefono: number,
     ciudad: string,
-    curso: number,
     tutor: number,
   ) {
     const response = await fetch(`${baseURL}/api/alumnos`, {
@@ -215,7 +214,6 @@ export const useAlumnosStore = defineStore("alumnos", () => {
         apellidos,
         telefono,
         ciudad,
-        curso,
         tutor,
       }),
     });

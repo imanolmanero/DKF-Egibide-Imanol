@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import Toast from "@/components/Notification/Toast.vue";
-import type { Curso } from "@/interfaces/Curso";
 import type { TutorEgibide } from "@/interfaces/TutorEgibide";
 import { useAlumnosStore } from "@/stores/alumnos";
 import { useCiclosStore } from "@/stores/ciclos";
@@ -14,25 +13,17 @@ const apellidos = ref<string>("");
 const telefono = ref<number>(0);
 const poblacion = ref<string>("");
 const ciclo = ref<number>(0);
-const curso = ref<number>(0);
 const tutor = ref<number>(0);
 
 const listaCiclos = ref<any[]>([]);
-const listaCursos = ref<Curso[]>([]);
 const listaTutores = ref<TutorEgibide[]>([]);
 
 watch(ciclo, async (newVal) => {
   if (!newVal) {
-    listaCursos.value = [];
-    curso.value = 0;
-
     listaTutores.value = [];
     tutor.value = 0;
     return;
   }
-  await cicloStore.fetchCursosByCiclos(newVal);
-  listaCursos.value = cicloStore.cursos;
-  curso.value = 0;
 
   await cicloStore.fetchTutoresByCiclos(newVal);
   listaTutores.value = cicloStore.tutores;
@@ -53,7 +44,6 @@ async function agregarAlumno() {
     apellidos.value,
     telefono.value,
     poblacion.value,
-    curso.value,
     tutor.value,
   );
 
@@ -68,7 +58,6 @@ function resetForms() {
   telefono.value = 0;
   poblacion.value = "";
   ciclo.value = 0;
-  curso.value = 0;
   tutor.value = 0;
 }
 </script>
@@ -153,21 +142,6 @@ function resetForms() {
             <option :value="0" disabled>-- Selecciona una opción --</option>
             <option v-for="c in listaCiclos" :key="c.id" :value="c.id">
               {{ c.nombre }}
-            </option>
-          </select>
-        </div>
-
-        <div class="mb-3 col-8">
-          <label for="curso" class="form-label">Curso:</label>
-          <select
-            class="form-select"
-            v-model.number="curso"
-            id="curso"
-            required
-          >
-            <option :value="0" disabled>-- Selecciona una opción --</option>
-            <option v-for="c in listaCursos" :key="c.id" :value="c.id">
-              {{ c.numero }}
             </option>
           </select>
         </div>

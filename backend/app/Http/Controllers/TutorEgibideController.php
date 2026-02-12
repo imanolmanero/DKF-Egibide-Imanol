@@ -57,8 +57,7 @@ class TutorEgibideController extends Controller
         if (!$ciclo)
             return response()->json([], 404);
 
-        $familia = $ciclo->familiaProfesional;
-        $tutores = $familia?->tutores ?? collect();
+        $tutores = $ciclo->tutores;
 
         return response()->json($tutores, 200);
     }
