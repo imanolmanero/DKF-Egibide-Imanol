@@ -345,6 +345,10 @@ class NotasApiTest extends TestCase
 
         $response = $this->getJson("/api/notas/alumno/{$alumno->id}/cuaderno");
 
-        $response->assertStatus(404);
+        $response->assertStatus(200)
+                 ->assertJson([
+                     'alumno_id' => $alumno->id,
+                     'notas_competenciasTec' => null,
+                 ]);
     }
 }

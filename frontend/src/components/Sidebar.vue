@@ -86,6 +86,12 @@ const userId = computed(() => authStore.currentUser.id);
               >Mis Grados</RouterLink
             >
           </li>
+          <li>
+            <RouterLink to="/tutor-egibide/entregas-cuaderno/nueva" class="sidebar-item">
+              Crear entrega cuaderno
+            </RouterLink>
+          </li>
+
         </ul>
       </div>
     </nav>

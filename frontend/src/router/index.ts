@@ -364,6 +364,15 @@ const router = createRouter({
           },
           meta: { role: "admin" },
         },
+        {
+          path: "tutor-egibide/entregas-cuaderno/nueva",
+          name: "tutor_egibide-entrega_cuaderno_nueva",
+          components: {
+            main: () => import("@/pages/TutorEgibide/crearEntregaCuaderno.vue"),
+          },
+          meta: { role: "tutor_egibide" },
+        },
+
       ],
     },
   ],

@@ -16,6 +16,7 @@ class Entrega extends Model
         'archivo',
         'fecha',
         'cuaderno_practicas_id',
+        'entrega_cuaderno_id',
     ];
 
     protected $casts = [
