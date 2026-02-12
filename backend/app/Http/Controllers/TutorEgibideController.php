@@ -270,9 +270,8 @@ class TutorEgibideController extends Controller
         $tutor = TutorEgibide::find($tutorId);
 
         // Obtenemos los cursos del tutor con su ciclo y alumnos sin tutor asignado
-        $cursos = $tutor->cursos()
+        $cursos = $tutor->ciclos()
             ->with([
-                'ciclo', // cargamos el ciclo de cada curso
                 'alumnos' => function ($query) {
                     $query->whereNull('tutor_id'); // solo alumnos sin tutor
                 }

@@ -6,14 +6,6 @@
 
   <div class="info-links">
     <RouterLink
-      to="/alumno/mis-datos"
-      class="info-card"
-    >
-      <h4>Mis Datos</h4>
-      <p>Ver y editar tus datos personales</p>
-    </RouterLink>
-
-    <RouterLink
       to="/alumno/empresa"
       class="info-card"
     >

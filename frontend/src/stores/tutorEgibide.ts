@@ -123,7 +123,14 @@ export const useTutorEgibideStore = defineStore("tutorEgibide", () => {
         return false;
       }
 
-      misCursos.value = data as Curso[];
+      // ✅ Adaptar al nuevo JSON
+      misCursos.value = data.map((ciclo: any) => ({
+        id: ciclo.id,
+        nombre: ciclo.nombre,
+        grupo: ciclo.grupo,
+        alumnos: ciclo.alumnos || []
+      }));
+
       return true;
     } catch (err) {
       console.error(err);
@@ -133,6 +140,7 @@ export const useTutorEgibideStore = defineStore("tutorEgibide", () => {
       loading.value = false;
     }
   }
+
 
   // Asignar alumno al tutor actual
   async function asignarAlumnoATutor(alumnoId: number, tutorId: number) {
