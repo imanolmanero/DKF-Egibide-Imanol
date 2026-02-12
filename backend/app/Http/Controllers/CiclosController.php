@@ -31,7 +31,6 @@ class CiclosController extends Controller {
     public function store(Request $request) {
         $validated = $request->validate([
             'nombre' => ['required'],
-            'codigo' => ['required'],
             'familia_profesional_id' => ['required']
         ]);
 
@@ -52,7 +51,6 @@ class CiclosController extends Controller {
         return response()->json([
             'id' => $ciclo->id,
             'nombre' => $ciclo->nombre,
-            'codigo' => $ciclo->codigo,
             'familia_profesional_id' => $ciclo->familia_profesional_id,
             'familia_profesional' => $ciclo->familiaProfesional ? $ciclo->familiaProfesional->nombre : null,
         ]);

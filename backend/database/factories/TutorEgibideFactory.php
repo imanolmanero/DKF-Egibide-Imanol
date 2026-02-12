@@ -3,23 +3,22 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Models\Alumnos;
+use App\Models\TutorEgibide;
 use App\Models\User;
 
-class AlumnosFactory extends Factory
+class TutorEgibideFactory extends Factory
 {
-    protected $model = Alumnos::class;
+    protected $model = TutorEgibide::class;
 
     public function definition(): array
     {
         return [
             'nombre' => fake()->firstName(),
             'apellidos' => fake()->lastName() . ' ' . fake()->lastName(),
+            'alias' => fake()->unique()->word(),
             'telefono' => fake()->optional()->numerify('#########'),
             'ciudad' => fake()->optional()->city(),
             'user_id' => User::factory(),
-            'matricula_id' => fake()->unique()->bothify('MAT-####'),
-            'dni' => fake()->unique()->numerify('#########'),
         ];
     }
 }

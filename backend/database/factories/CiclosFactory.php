@@ -14,7 +14,6 @@ class CiclosFactory extends Factory
     {
         return [
             'nombre' => fake()->unique()->word(),
-            'codigo' => fake()->unique()->bothify('???-##'),
             'familia_profesional_id' => FamiliaProfesional::factory(),
         ];
     }

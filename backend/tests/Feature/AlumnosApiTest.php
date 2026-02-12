@@ -49,6 +49,7 @@ class AlumnosApiTest extends TestCase
         $tutorId = DB::table('tutores')->insertGetId([
             'nombre' => 'Tutor',
             'apellidos' => 'Pruebas',
+            'alias' => 'tutor_alias_1',
             'telefono' => '600000000',
             'ciudad' => 'Vitoria',
             'user_id' => $userTutor->id,
@@ -89,7 +90,7 @@ class AlumnosApiTest extends TestCase
             ]);
         } else {
             // Current behavior: 500 because alumnos.curso_id is required
-            $this->assertIn($response->status(), [500, 422]);
+            $this->assertTrue(in_array($response->status(), [500, 422]));
         }
     }
 
