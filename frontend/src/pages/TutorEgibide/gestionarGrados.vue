@@ -280,4 +280,3 @@ async function recargarListas() {
     </div>
   </div>
 </template>
-
