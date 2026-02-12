@@ -38,12 +38,32 @@ class EntregasApiTest extends TestCase
             'updated_at' => now(),
         ]);
 
+        // Ciclo con grupo
+        $grupo = fake()->unique()->bothify('DAW##');
+        $ciclo = Ciclos::factory()->create([
+            'grupo' => $grupo,
+        ]);
+
+        // Tutor
+        $userTutor = User::factory()->create(['role' => 'tutor_egibide']);
+        $tutorId = DB::table('tutores')->insertGetId([
+            'nombre' => 'Tutor',
+            'apellidos' => 'Pruebas',
+            'alias' => fake()->unique()->word(),
+            'telefono' => '600000000',
+            'ciudad' => 'Vitoria',
+            'user_id' => $userTutor->id,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
         // Alumno
         $userAlumno = User::factory()->create(['role' => 'alumno']);
         Sanctum::actingAs($userAlumno);
 
         $alumno = Alumnos::factory()->create([
             'user_id' => $userAlumno->id,
+            'grupo' => $grupo,
         ]);
 
         // Estancia
@@ -65,7 +85,18 @@ class EntregasApiTest extends TestCase
             'updated_at' => now(),
         ]);
 
-        return [$userAlumno, $cuadernoId];
+        // Entrega Cuaderno
+        $entregaCuadernoId = DB::table('entregas_cuaderno')->insertGetId([
+            'titulo' => 'Entrega de prueba',
+            'descripcion' => 'Descripción de prueba',
+            'fecha_limite' => now()->addDays(7)->toDateString(),
+            'ciclo_id' => $ciclo->id,
+            'tutor_id' => $tutorId,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return [$userAlumno, $cuadernoId, $entregaCuadernoId];
     }
 
     public function test_requiere_autenticacion(): void
@@ -76,7 +107,7 @@ class EntregasApiTest extends TestCase
 
     public function test_listar_mis_entregas(): void
     {
-        [$user, $cuadernoId] = $this->crearContextoCompleto();
+        [$user, $cuadernoId, $entregaCuadernoId] = $this->crearContextoCompleto();
 
         Entrega::factory()->create([
             'cuaderno_practicas_id' => $cuadernoId,
@@ -92,14 +123,13 @@ class EntregasApiTest extends TestCase
     {
         Storage::fake('public');
 
-        [$user, $cuadernoId] = $this->crearContextoCompleto();
+        [$user, $cuadernoId, $entregaCuadernoId] = $this->crearContextoCompleto();
 
         $file = UploadedFile::fake()->create('entrega.pdf', 100, 'application/pdf');
 
         $response = $this->postJson('/api/entregas', [
             'archivo' => $file,
-            'fecha' => now()->toDateString(),
-            'cuaderno_practicas_id' => $cuadernoId,
+            'entrega_cuaderno_id' => $entregaCuadernoId,
         ]);
 
         $response->assertStatus(201);
@@ -113,7 +143,7 @@ class EntregasApiTest extends TestCase
 
     public function test_borrar_mi_entrega(): void
     {
-        [$user, $cuadernoId] = $this->crearContextoCompleto();
+        [$user, $cuadernoId, $entregaCuadernoId] = $this->crearContextoCompleto();
 
         $entrega = Entrega::factory()->create([
             'cuaderno_practicas_id' => $cuadernoId,
@@ -132,7 +162,7 @@ class EntregasApiTest extends TestCase
     {
         Storage::fake('public');
 
-        [$user, $cuadernoId] = $this->crearContextoCompleto();
+        [$user, $cuadernoId, $entregaCuadernoId] = $this->crearContextoCompleto();
 
         $entrega = Entrega::factory()->create([
             'cuaderno_practicas_id' => $cuadernoId,
