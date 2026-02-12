@@ -17,6 +17,8 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ResultadosController;
 use App\Http\Controllers\ImportacionController;
 use App\Http\Controllers\AsignaturasController;
+use App\Http\Controllers\EntregaCuadernoController;
+
 Route::post('/login', [AuthController::class, 'authenticate'])->name('authenticate');
 Route::get('/entregas/{entrega}/archivo', [EntregaController::class, 'archivo']);
 
@@ -120,5 +122,11 @@ Route::delete('/tutorEgibide/{tutorId}/ciclos/{cicloId}',[TutorEgibideController
 
         //Asignaturas
         Route::get('/asignaturas', [AsignaturasController::class, 'index']);
+
+        // Entregas de cuaderno (tutor Egibide)
+        Route::get('/entregas-cuaderno', [EntregaCuadernoController::class, 'index']);
+        Route::post('/entregas-cuaderno', [EntregaCuadernoController::class, 'store']);
+        Route::get('/entregas-cuaderno/mias', [EntregaController::class, 'misEntregasCuaderno']);
+
     }
 );
