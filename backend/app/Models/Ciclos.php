@@ -39,7 +39,7 @@ class Ciclos extends Model {
      * Get all asignaturas for this ciclo
      */
     public function asignaturas(): HasMany {
-        return $this->hasMany(Asignatura::class, 'ciclo_id');
+        return $this->hasMany(Asignatura::class, 'ciclo_id','id');
     }
 
     /**
@@ -54,6 +54,6 @@ class Ciclos extends Model {
     }
 
     public function alumnos(){
-        return $this->hasMany(Alumnos::class,'curso_id','id');
+        return $this->hasMany(Alumnos::class,'grupo','grupo');
     }
 }

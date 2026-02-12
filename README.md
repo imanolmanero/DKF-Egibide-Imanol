@@ -5,6 +5,7 @@ COSAS QUE HAY QUE HACER:
 
 - Crear asignatura, RA, competencia y relacionarlo TODO con ciclo.
 - Crear entrega de cuaderno y que tenga fecha limite.
+- Relacionar tutor con grado.
 - Paginacion de "Mis grados".
 
 ADMIN:
