@@ -3,7 +3,6 @@
 
 COSAS QUE HAY QUE HACER:
 
-- Hacer horario semanal(como lo teniamos en nuestri proyecto).
 - Crear asignatura, RA, competencia y relacionarlo TODO con ciclo.
 - Crear entrega de cuaderno y que tenga fecha limite.
 - Paginacion de "Mis grados".
