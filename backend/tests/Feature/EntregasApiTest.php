@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Models\Entrega;
 use App\Models\Alumnos;
 use App\Models\Ciclos;
+use App\Models\Empresas;
 
 class EntregasApiTest extends TestCase
 {
@@ -20,25 +21,19 @@ class EntregasApiTest extends TestCase
 
     private function crearContextoCompleto(): array
     {
-        // Ciclo + curso
-        $ciclo = Ciclos::factory()->create();
+        // Empresa
+        $empresa = Empresas::factory()->create();
 
-        $cursoId = DB::table('cursos')->insertGetId([
-            'numero' => 1,
-            'ciclo_id' => $ciclo->id,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // Instructor
+        $userInstructor = User::factory()->create(['role' => 'instructor']);
 
-        // Tutor
-        $userTutor = User::factory()->create(['role' => 'tutor_egibide']);
-
-        $tutorId = DB::table('tutores')->insertGetId([
-            'nombre' => 'Tutor',
+        $instructorId = DB::table('instructores')->insertGetId([
+            'nombre' => 'Instructor',
             'apellidos' => 'Pruebas',
             'telefono' => '600000000',
             'ciudad' => 'Vitoria',
-            'user_id' => $userTutor->id,
+            'empresa_id' => $empresa->id,
+            'user_id' => $userInstructor->id,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -54,8 +49,8 @@ class EntregasApiTest extends TestCase
         // Estancia
         $estanciaId = DB::table('estancias')->insertGetId([
             'alumno_id' => $alumno->id,
-            'curso_id' => $cursoId,
-            'tutor_id' => $tutorId,
+            'instructor_id' => $instructorId,
+            'empresa_id' => $empresa->id,
             'puesto' => 'Sin asignar',
             'fecha_inicio' => now()->toDateString(),
             'horas_totales' => 0,

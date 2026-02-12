@@ -11,6 +11,7 @@ use App\Models\Seguimiento;
 use App\Models\User;
 use App\Models\Alumnos;
 use App\Models\Ciclos;
+use App\Models\Empresas;
 
 class SeguimientosModelTest extends TestCase
 {
@@ -18,22 +19,16 @@ class SeguimientosModelTest extends TestCase
 
     private function crearEstancia(): int
     {
-        $ciclo = Ciclos::factory()->create();
-
-        $cursoId = DB::table('cursos')->insertGetId([
-            'numero' => 1,
-            'ciclo_id' => $ciclo->id,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
         $userTutor = User::factory()->create(['role' => 'tutor_egibide']);
 
-        $tutorId = DB::table('tutores')->insertGetId([
-            'nombre' => 'Tutor',
+        $empresa = Empresas::factory()->create();
+
+        $instructorId = DB::table('instructores')->insertGetId([
+            'nombre' => 'Instructor',
             'apellidos' => 'Pruebas',
             'telefono' => '600000000',
             'ciudad' => 'Vitoria',
+            'empresa_id' => $empresa->id,
             'user_id' => $userTutor->id,
             'created_at' => now(),
             'updated_at' => now(),
@@ -47,8 +42,8 @@ class SeguimientosModelTest extends TestCase
 
         return DB::table('estancias')->insertGetId([
             'alumno_id' => $alumno->id,
-            'curso_id' => $cursoId,
-            'tutor_id' => $tutorId,
+            'instructor_id' => $instructorId,
+            'empresa_id' => $empresa->id,
             'puesto' => 'Sin asignar',
             'fecha_inicio' => now()->toDateString(),
             'horas_totales' => 0,

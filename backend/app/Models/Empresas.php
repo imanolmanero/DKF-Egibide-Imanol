@@ -20,18 +20,12 @@ class Empresas extends Model {
     ];
 
     /**
-     * Get all instructores for this empresa
+     * Get all instructores directamente asignados a esta empresa
+     * CORREGIDO: Ahora usa hasMany en lugar de belongsToMany
      */
-
-
-    public function instructores()
+    public function instructores(): HasMany
     {
-        return $this->belongsToMany(
-            TutorEmpresa::class,
-            'estancias',
-            'empresa_id',
-            'instructor_id'     
-        )->distinct();
+        return $this->hasMany(TutorEmpresa::class, 'empresa_id', 'id');
     }
 
     /**

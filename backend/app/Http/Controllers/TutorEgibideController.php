@@ -42,22 +42,7 @@ class TutorEgibideController extends Controller
 
     public function getDetalleEmpresa(Request $request, $empresaId)
     {
-        $userId = $request->user()->id;
-        $tutor = TutorEgibide::where('user_id', $userId)->firstOrFail();
-
-        $empresa = Empresas::with([
-            'instructores' => function ($query) use ($tutor) {
-                $query->whereHas('estancias.alumno', function ($q) use ($tutor) {
-                    $q->where('tutor_id', $tutor->id);
-                });
-            }
-        ])
-            ->where('id', $empresaId)
-            ->whereHas('estancias.alumno', function ($query) use ($tutor) {
-                $query->where('tutor_id', $tutor->id);
-            })
-            ->firstOrFail();
-
+        $empresa = Empresas::with('instructores')->findOrFail($empresaId);
         return response()->json($empresa);
     }
 
